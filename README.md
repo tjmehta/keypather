@@ -1,4 +1,4 @@
-#value-for-keypath
+#value-for-keypath [![Build Status](https://travis-ci.org/tjmehta/value-for-keypath.png?branch=master)](https://travis-ci.org/tjmehta/value-for-keypath)
 ##Get a value from an object using a keypath string. Supports bracket notation, dot notation, and functions
 
 ###installation
