@@ -19,7 +19,7 @@ var obj = {
     };
   }
 };
-valueForKeypath(this.obj, "foo()['bar'].baz"); // val
+valueForKeypath(obj, "foo()['bar'].baz"); // val
 ```
 
 ####dot notation:
@@ -32,7 +32,7 @@ var obj = {
     }
   }
 };
-valueForKeypath(this.obj, "foo.bar.baz"); // val
+valueForKeypath(obj, "foo.bar.baz"); // val
 ```
 
 ####bracket notation:
@@ -45,7 +45,7 @@ var obj = {
     }
   }
 };
-valueForKeypath(this.obj, "['foo']['bar']['baz']"); // val
+valueForKeypath(obj, "['foo']['bar']['baz']"); // val
 ```
 
 ####functions:
@@ -60,5 +60,5 @@ var obj = {
     };
   }
 };
-valueForKeypath(this.obj, "foo()()()"); // val
+valueForKeypath(obj, "foo()()()"); // val
 ```
