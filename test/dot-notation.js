@@ -1,4 +1,4 @@
-var getValueForKeyPath = require('../index');
+var valueForKeypath = require('../index');
 
 describe('dot notation', function () {
   describe("valueForKeyPath(obj, 'foo')", function () {
@@ -8,7 +8,7 @@ describe('dot notation', function () {
       };
     });
     it('should get the value', function () {
-      getValueForKeyPath(this.obj, 'foo').should.eql(this.obj.foo);
+      valueForKeypath(this.obj, 'foo').should.eql(this.obj.foo);
     });
   });
   describe("valueForKeyPath(obj, 'foo.bar')", function () {
@@ -20,7 +20,7 @@ describe('dot notation', function () {
       };
     });
     it('should get the value', function () {
-      getValueForKeyPath(this.obj, 'foo.bar').should.eql(this.obj.foo.bar);
+      valueForKeypath(this.obj, 'foo.bar').should.eql(this.obj.foo.bar);
     });
   });
 });

@@ -1,4 +1,4 @@
-var getValueForKeyPath = require('../index');
+var valueForKeypath = require('../index');
 
 describe('mixed', function () {
   describe("valueForKeyPath(obj, 'foo()['bar'].baz')", function () {
@@ -14,7 +14,7 @@ describe('mixed', function () {
       };
     });
     it('should get the value', function () {
-      getValueForKeyPath(this.obj, "foo()['bar'].baz").should.eql(this.obj.foo().bar.baz);
+      valueForKeypath(this.obj, "foo()['bar'].baz").should.eql(this.obj.foo().bar.baz);
     });
   });
   describe("valueForKeyPath(obj, 'foo().bar['baz']')", function () {
@@ -30,7 +30,7 @@ describe('mixed', function () {
       };
     });
     it('should get the value', function () {
-      getValueForKeyPath(this.obj, "foo().bar['baz']").should.eql(this.obj.foo().bar.baz);
+      valueForKeypath(this.obj, "foo().bar['baz']").should.eql(this.obj.foo().bar.baz);
     });
   });
   describe("valueForKeyPath(obj, '['foo'].bar.baz()')", function () {
@@ -46,7 +46,7 @@ describe('mixed', function () {
       };
     });
     it('should get the value', function () {
-      getValueForKeyPath(this.obj, "['foo'].bar.baz()").should.eql(this.obj.foo.bar.baz());
+      valueForKeypath(this.obj, "['foo'].bar.baz()").should.eql(this.obj.foo.bar.baz());
     });
   });
   describe("valueForKeyPath(obj, '['foo'].bar().baz')", function () {
@@ -62,7 +62,7 @@ describe('mixed', function () {
       };
     });
     it('should get the value', function () {
-      getValueForKeyPath(this.obj, "['foo'].bar().baz").should.eql(this.obj.foo.bar().baz);
+      valueForKeypath(this.obj, "['foo'].bar().baz").should.eql(this.obj.foo.bar().baz);
     });
   });
   describe("valueForKeyPath(obj, 'foo.bar()['baz']')", function () {
@@ -78,7 +78,7 @@ describe('mixed', function () {
       };
     });
     it('should get the value', function () {
-      getValueForKeyPath(this.obj, "foo.bar()['baz']").should.eql(this.obj.foo.bar().baz);
+      valueForKeypath(this.obj, "foo.bar()['baz']").should.eql(this.obj.foo.bar().baz);
     });
   });
   describe("valueForKeyPath(obj, 'foo['bar'].baz()')", function () {
@@ -94,7 +94,7 @@ describe('mixed', function () {
       };
     });
     it('should get the value', function () {
-      getValueForKeyPath(this.obj, "foo['bar'].baz()").should.eql(this.obj.foo.bar.baz());
+      valueForKeypath(this.obj, "foo['bar'].baz()").should.eql(this.obj.foo.bar.baz());
     });
   });
 });
