@@ -1,0 +1,43 @@
+{
+  "name": "value-for-keypath",
+  "version": "0.0.0",
+  "description": "Get a value from an object from a keypath string",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tjmehta/value-for-keypath.git"
+  },
+  "keywords": [
+    "keypath",
+    "value",
+    "traversal",
+    "dot",
+    "notation",
+    "bracket",
+    "notation",
+    "function",
+    "path",
+    "array",
+    "object",
+    "dot",
+    "notation",
+    "node",
+    "module",
+    "key",
+    "keys",
+    "string"
+  ],
+  "author": "Tejesh Mehta",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tjmehta/value-for-keypath/issues"
+  },
+  "homepage": "https://github.com/tjmehta/value-for-keypath",
+  "dependencies": {},
+  "devDependencies": {
+    "should": "~3.1.2"
+  }
+}
