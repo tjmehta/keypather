@@ -1,12 +1,12 @@
 #value-for-keypath
-##Get a value from an object using a keypath string. Supports bracket notation, dot notation, and functions
+##Get or Set value on an object using a keypath string. Supports bracket notation, dot notation, and functions
 
 ###installation
 ```bash
 npm install value-for-keypath
 ```
 
-###usage
+### GET
 ####mixed notation:
 ```js
 var valueForKeypath = require('value-for-keypath');
@@ -61,4 +61,46 @@ var obj = {
   }
 };
 valueForKeypath(this.obj, "foo()()()"); // val
+```
+
+### SET
+####mixed notation:
+```js
+var valueForKeypath = require('value-for-keypath');
+var obj = {
+  foo: function () {
+    return {
+      bar: {
+        baz: 'val'
+      }
+    };
+  }
+};
+valueForKeypath(this.obj, "foo()['bar'].baz", 'value'); // val
+```
+
+####dot notation:
+```js
+var valueForKeypath = require('value-for-keypath');
+var obj = {
+  foo: {
+    bar: {
+      baz: 'val'
+    }
+  }
+};
+valueForKeypath(this.obj, "foo.bar.baz"); // val
+```
+
+####bracket notation:
+```js
+var valueForKeypath = require('value-for-keypath');
+var obj = {
+  foo: {
+    bar: {
+      baz: 'val'
+    }
+  }
+};
+valueForKeypath(this.obj, "['foo']['bar']['baz']", 'value'); // val
 ```

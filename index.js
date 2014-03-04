@@ -1,10 +1,33 @@
-var valueForKeyPath = module.exports = function  (obj, keyPathStr) {
-  var keyPathSplit = keyPathStr.split('.');
-  return keyPathSplit.reduce(getKeyPath, obj);
+var valueForKeypath = module.exports = function  (obj, keypathStr, value) {
+  return (arguments.length > 2) ?
+    setKeypath(obj, keypathStr, value):
+    getKeypath(obj, keypathStr);
 };
 
+function setKeypath (obj, keypathStr, value) {
+  if (~keypathStr.indexOf('()')) {
+    throw new Error("don't use set keypath with a function, it doesn't make sense");
+  }
+  var match = keypathStr.match(/(.*)([.]|\[["'])([^.\[]+)$/);
+  if (match) {
+    lastKey = match[2]+match[3];
+    lastKey = ~lastKey.indexOf('.') ?
+      lastKey.slice(1) :
+      lastKey.slice(2, -2);
+    var keypathWithoutLast = match[1];
+    getKeypath(obj, keypathWithoutLast)[lastKey] = value;
+  }
+  else {
+    obj[keypathStr] = value;
+  }
+  return value;
+}
+function getKeypath (obj, keypathStr) {
+  var keyPathSplit = keypathStr.split('.');
+  return keyPathSplit.reduce(getKeypathReduce, obj);
+}
 // private
-function getKeyPath(val, key) {
+function getKeypathReduce (val, key) {
   return reduceOpts(optsHasKey, getValue, {
     val: val,
     key: key
