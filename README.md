@@ -68,15 +68,14 @@ valueForKeypath(obj, "foo()()()"); // val
 ```js
 var valueForKeypath = require('value-for-keypath');
 var obj = {
-  foo: function () {
-    return {
+  foo: {
       bar: {
         baz: 'val'
       }
-    };
+    }
   }
 };
-valueForKeypath(this.obj, "foo()['bar'].baz", 'value'); // val
+valueForKeypath(this.obj, "foo['bar'].baz", 'value'); // value
 ```
 
 ####dot notation:
@@ -89,7 +88,7 @@ var obj = {
     }
   }
 };
-valueForKeypath(this.obj, "foo.bar.baz"); // val
+valueForKeypath(this.obj, "foo.bar.baz"); // value
 ```
 
 ####bracket notation:
@@ -102,5 +101,5 @@ var obj = {
     }
   }
 };
-valueForKeypath(this.obj, "['foo']['bar']['baz']", 'value'); // val
+valueForKeypath(this.obj, "['foo']['bar']['baz']", 'value'); // value
 ```
