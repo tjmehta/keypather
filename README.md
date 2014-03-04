@@ -88,7 +88,7 @@ var obj = {
     }
   }
 };
-valueForKeypath(this.obj, "foo.bar.baz"); // value
+valueForKeypath(this.obj, "foo.bar.baz", 'value'); // value
 ```
 
 ####bracket notation:
