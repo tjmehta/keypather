@@ -8,6 +8,7 @@ function Keypather (force) {
 }
 Keypather.prototype.get = function (obj, keypath) {
   this.obj = obj;
+  this.create = false;
   this.keypathSplit = keypath.split('.');
   return this.keypathSplit.reduce(this.getValue.bind(this), obj);
 };

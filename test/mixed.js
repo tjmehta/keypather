@@ -1,7 +1,7 @@
-var valueForKeypath = require('../index')();
+var keypather = require('../index')();
 
 describe('mixed', function () {
-  describe("valueForKeypath.get(obj, 'foo()['bar'].baz')", function () {
+  describe("keypather.get(obj, 'foo()['bar'].baz')", function () {
     before(function () {
       this.obj = {
         foo: function () {
@@ -14,10 +14,10 @@ describe('mixed', function () {
       };
     });
     it('should get the value', function () {
-      valueForKeypath.get(this.obj, "foo()['bar'].baz").should.eql(this.obj.foo().bar.baz);
+      keypather.get(this.obj, "foo()['bar'].baz").should.eql(this.obj.foo().bar.baz);
     });
   });
-  describe("valueForKeypath.get(obj, 'foo().bar['baz']')", function () {
+  describe("keypather.get(obj, 'foo().bar['baz']')", function () {
     before(function () {
       this.obj = {
         foo: function () {
@@ -30,10 +30,10 @@ describe('mixed', function () {
       };
     });
     it('should get the value', function () {
-      valueForKeypath.get(this.obj, "foo().bar['baz']").should.eql(this.obj.foo().bar.baz);
+      keypather.get(this.obj, "foo().bar['baz']").should.eql(this.obj.foo().bar.baz);
     });
   });
-  describe("valueForKeypath.get(obj, '['foo'].bar.baz()')", function () {
+  describe("keypather.get(obj, '['foo'].bar.baz()')", function () {
     before(function () {
       this.obj = {
         foo: {
@@ -46,10 +46,10 @@ describe('mixed', function () {
       };
     });
     it('should get the value', function () {
-      valueForKeypath.get(this.obj, "['foo'].bar.baz()").should.eql(this.obj.foo.bar.baz());
+      keypather.get(this.obj, "['foo'].bar.baz()").should.eql(this.obj.foo.bar.baz());
     });
   });
-  describe("valueForKeypath.get(obj, '['foo'].bar().baz')", function () {
+  describe("keypather.get(obj, '['foo'].bar().baz')", function () {
     before(function () {
       this.obj = {
         foo: {
@@ -62,10 +62,10 @@ describe('mixed', function () {
       };
     });
     it('should get the value', function () {
-      valueForKeypath.get(this.obj, "['foo'].bar().baz").should.eql(this.obj.foo.bar().baz);
+      keypather.get(this.obj, "['foo'].bar().baz").should.eql(this.obj.foo.bar().baz);
     });
   });
-  describe("valueForKeypath.get(obj, 'foo.bar()['baz']')", function () {
+  describe("keypather.get(obj, 'foo.bar()['baz']')", function () {
     before(function () {
       this.obj = {
         foo: {
@@ -78,10 +78,10 @@ describe('mixed', function () {
       };
     });
     it('should get the value', function () {
-      valueForKeypath.get(this.obj, "foo.bar()['baz']").should.eql(this.obj.foo.bar().baz);
+      keypather.get(this.obj, "foo.bar()['baz']").should.eql(this.obj.foo.bar().baz);
     });
   });
-  describe("valueForKeypath.get(obj, 'foo['bar'].baz()')", function () {
+  describe("keypather.get(obj, 'foo['bar'].baz()')", function () {
     before(function () {
       this.obj = {
         foo: {
@@ -94,7 +94,7 @@ describe('mixed', function () {
       };
     });
     it('should get the value', function () {
-      valueForKeypath.get(this.obj, "foo['bar'].baz()").should.eql(this.obj.foo.bar.baz());
+      keypather.get(this.obj, "foo['bar'].baz()").should.eql(this.obj.foo.bar.baz());
     });
   });
 });
