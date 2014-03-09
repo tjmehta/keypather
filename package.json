@@ -1,7 +1,7 @@
 {
-  "name": "value-for-keypath",
+  "name": "keypather",
   "version": "1.0.1",
-  "description": "Get a value from an object from a keypath string supports bracket notation, dot notation, and functions",
+  "description": "Get or set a object values from a keypath string. Supports bracket notation, dot notation, and functions",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
