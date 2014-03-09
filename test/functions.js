@@ -1,7 +1,7 @@
-var valueForKeypath = require('../index');
+var valueForKeypath = require('../index')();
 
 describe('functions', function () {
-  describe("valueForKeyPath(obj, 'foo()')", function () {
+  describe("valueForKeypath.get(obj, 'foo()')", function () {
     before(function () {
       this.obj = {
         foo: function () {
@@ -10,10 +10,10 @@ describe('functions', function () {
       };
     });
     it('should get the value', function () {
-      valueForKeypath(this.obj, 'foo()').should.eql(this.obj.foo());
+      valueForKeypath.get(this.obj, 'foo()').should.eql(this.obj.foo());
     });
   });
-  describe("valueForKeyPath(obj, 'foo()()')", function () {
+  describe("valueForKeypath.get(obj, 'foo()()')", function () {
     before(function () {
       this.obj = {
         foo: function () {
@@ -24,7 +24,7 @@ describe('functions', function () {
       };
     });
     it('should get the value', function () {
-      valueForKeypath(this.obj, 'foo()()').should.eql(this.obj.foo()());
+      valueForKeypath.get(this.obj, 'foo()()').should.eql(this.obj.foo()());
     });
   });
 });

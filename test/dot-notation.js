@@ -1,17 +1,17 @@
-var valueForKeypath = require('../index');
+var valueForKeypath = require('../index')();
 
 describe('dot notation', function () {
-  describe("valueForKeyPath(obj, 'foo')", function () {
+  describe("valueForKeypath.get(obj, 'foo')", function () {
     before(function () {
       this.obj = {
         foo: Math.random()
       };
     });
     it('should get the value', function () {
-      valueForKeypath(this.obj, 'foo').should.eql(this.obj.foo);
+      valueForKeypath.get(this.obj, 'foo').should.eql(this.obj.foo);
     });
   });
-  describe("valueForKeyPath(obj, 'foo.bar')", function () {
+  describe("valueForKeypath.get(obj, 'foo.bar')", function () {
     before(function () {
       this.obj = {
         foo: {
@@ -20,7 +20,7 @@ describe('dot notation', function () {
       };
     });
     it('should get the value', function () {
-      valueForKeypath(this.obj, 'foo.bar').should.eql(this.obj.foo.bar);
+      valueForKeypath.get(this.obj, 'foo.bar').should.eql(this.obj.foo.bar);
     });
   });
 });

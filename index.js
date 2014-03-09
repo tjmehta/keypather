@@ -1,92 +1,116 @@
-var valueForKeypath = module.exports = function  (obj, keypathStr, value) {
-  return (arguments.length > 2) ?
-    setKeypath(obj, keypathStr, value):
-    getKeypath(obj, keypathStr);
+var valueForKeypath = module.exports = function (opts) {
+  var keypather = new Keypather(opts && opts.force);
+  return keypather;
 };
 
-function setKeypath (obj, keypathStr, value) {
-  if (~keypathStr.indexOf('()')) {
-    throw new Error("don't use set keypath with a function, it doesn't make sense");
+function Keypather (force) {
+  this.force = (force !== undefined) ? Boolean(force) : true; // force - default: true
+}
+Keypather.prototype.get = function (obj, keypath) {
+  this.obj = obj;
+  this.keypathSplit = keypath.split('.');
+  return this.keypathSplit.reduce(this.getValue.bind(this), obj);
+};
+Keypather.prototype.set = function (obj, keypath, value) {
+  this.obj = obj;
+  this.create = this.force;
+  if (keypath.match(/\(\)$/)) {
+    throw new Error("Invalid left-hand side in assignment");
   }
-  var match = keypathStr.match(/(.*)([.]|\[["'])([^.\[]+)$/);
+  var match = keypath.match(/(.*)([.]|\[["'])([^.\[]+)$/);
   if (match) {
     lastKey = match[2]+match[3];
     lastKey = ~lastKey.indexOf('.') ?
       lastKey.slice(1) :
       lastKey.slice(2, -2);
     var keypathWithoutLast = match[1];
-    getKeypath(obj, keypathWithoutLast)[lastKey] = value;
+    this.getValue(obj, keypathWithoutLast)[lastKey] = value;
   }
   else {
-    obj[keypathStr] = value;
+    obj[keypath] = value;
   }
   return value;
-}
-function getKeypath (obj, keypathStr) {
-  var keyPathSplit = keypathStr.split('.');
-  return keyPathSplit.reduce(getKeypathReduce, obj);
-}
-// private
-function getKeypathReduce (val, key) {
-  return reduceOpts(optsHasKey, getValue, {
-    val: val,
-    key: key
-  });
-}
-function reduceOpts (condition, iterator, opts) {
-  var initVal = opts.val;
-  whileFunction(condition, iterator, opts);
-  return opts.val;
-}
-function whileFunction (fn, iterator, opts) {
-  if (fn(opts)) {
-    iterator(opts);
-    whileFunction(fn, iterator, opts);
-  }
-}
-function optsHasKey (opts) {
-  return opts.key;
-}
-function getValue (opts) {
-  opts.indexParens = opts.key.indexOf('()');
-  opts.indexOpenBracket = opts.key.indexOf('[');
-  opts.indexCloseBracket = opts.key.indexOf(']');
-  var keyHasParens   = ~opts.indexParens;
-  var keyHasBrackets = ~opts.indexOpenBracket && ~opts.indexCloseBracket;
+};
+
+
+// internal
+Keypather.prototype.getValue = function (val, keyPart) {
+  this.indexParens = keyPart.indexOf('()');
+  this.indexOpenBracket = keyPart.indexOf('[');
+  this.indexCloseBracket = keyPart.indexOf(']');
+  var keyHasParens   = ~this.indexParens;
+  var keyHasBrackets = ~this.indexOpenBracket && ~this.indexCloseBracket;
+  this.lastVal = val;
   if (!keyHasParens && !keyHasBrackets) {
-    opts.val = opts.val[opts.key];
-    opts.key = ''; // reduce done
+    return this.handleKey(val, keyPart);
   }
-  else if (keyHasParens && (!keyHasBrackets || opts.indexParens < opts.indexOpenBracket)) {
-    handleFunction(opts);
+  else if (keyHasParens && (!keyHasBrackets || this.indexParens < this.indexOpenBracket)) {
+    return this.handleFunction(val, keyPart);
   }
   else {
-    handleBrackets(opts);
+    return this.handleBrackets(val, keyPart);
   }
-}
-function handleFunction (opts) {
-  var subKey = opts.key.slice(0, opts.indexParens);
-  opts.val = subKey ?
-    opts.val = opts.val[subKey]():
-    opts.val = opts.val(); // back to back functions/brackets
-  opts.key = opts.key.slice(opts.indexParens+2); // update key, slice of function
-}
-function handleBrackets (opts) {
-  var subKey = opts.key.slice(0, opts.indexOpenBracket);
-  var bracketKey = opts.key.slice(opts.indexOpenBracket+1, opts.indexCloseBracket);
+};
+Keypather.prototype.handleKey = function (val, key) {
+  if (this.create && !exists(val[key])) {
+    return this.createPath(val, key);
+  }
+  return (this.force && !exists(val)) ?
+      null : val[key];
+};
+Keypather.prototype.handleFunction = function (val, keyPart) {
+  var subKey = keyPart.slice(0, this.indexParens);
+  if (subKey) {
+    if (this.create && !exists(val[subKey])) {
+      throw new Error('KeypathSetError: cannot force create a path where a function does not exist');
+    }
+    val = (this.force && !exists(val[subKey])) ?
+      null : val[subKey]();
+  }
+  else {
+    val = (this.force && !exists(val)) ?
+      null : val.call(this.lastVal || global); // maintain context
+  }
+  keyPart = keyPart.slice(this.indexParens+2); // update key, slice of function
+  return keyPart ? // if keypart left, back to back fn or brackets so recurse
+    this.getValue(val, keyPart) : val;
+};
+Keypather.prototype.handleBrackets = function (val, keyPart) {
+  var subKey = keyPart.slice(0, this.indexOpenBracket);
+  var bracketKey = keyPart.slice(this.indexOpenBracket+1, this.indexCloseBracket);
   bracketKey = parseBracketKey(bracketKey);
   if (!bracketKey) {
     // invalid bracket structure, use key as is.
-    opts.val = opts.val[opts.key];
-    opts.key = ''; // reduce done
+    return this.handleKey(val, keyPart);
   }
   else {
-    opts.val = subKey ?
-      opts.val[subKey][bracketKey] :
-      opts.val[bracketKey]; // back to back functions/brackets
-    opts.key = opts.key.slice(opts.indexCloseBracket+1); // update key, slice off bracket notation
+    if (subKey) {
+      if (this.create && !exists(val[subKey])) {
+        return this.createPath(val, subKey, bracketKey);
+      }
+      val = (this.force && (!exists(val) || !exists(val[subKey]))) ?
+        null : val[subKey][bracketKey];
+    }
+    else {
+      if (this.create && !exists(val[bracketKey])) {
+        return this.createPath(val, bracketKey);
+      }
+      val = (this.force && !exists(val)) ?
+        null : val[bracketKey];
+    }
+    keyPart = keyPart.slice(this.indexCloseBracket+1); // update key, slice off bracket notation
+    return keyPart ? // if keypart left, back to back fn or brackets so recurse
+      this.getValue(val, keyPart) : val;
   }
-}
+};
+Keypather.prototype.createPath = function (val /*, keys */) {
+  var keys = Array.prototype.slice.call(arguments, 1);
+  return keys.reduce(function (val, key) {
+    val[key] = {};
+    return val[key];
+  }, val);
+};
+
 function parseBracketKey (key) {
   key = key.replace(/'/g, '"'); // single quotes to double
   try {
@@ -96,4 +120,8 @@ function parseBracketKey (key) {
     console.error(err);
     return;
   }
+}
+
+function exists (val) {
+  return val !== null && val !== undefined;
 }

@@ -1,7 +1,7 @@
-var valueForKeypath = require('../index');
+var valueForKeypath = require('../index')();
 
 describe('bracket notation', function () {
-  describe("valueForKeyPath(obj, 'foo['bar']')", function () {
+  describe("valueForKeypath.get(obj, 'foo['bar']')", function () {
     before(function () {
       this.obj = {
         foo: {
@@ -10,10 +10,10 @@ describe('bracket notation', function () {
       };
     });
     it('should get the value', function () {
-      valueForKeypath(this.obj, "foo['bar']").should.eql(this.obj.foo.bar);
+      valueForKeypath.get(this.obj, "foo['bar']").should.eql(this.obj.foo.bar);
     });
   });
-  describe("valueForKeyPath(obj, 'foo['bar']['baz']')", function () {
+  describe("valueForKeypath.get(obj, 'foo['bar']['baz']')", function () {
     before(function () {
       this.obj = {
         foo: {
@@ -24,7 +24,7 @@ describe('bracket notation', function () {
       };
     });
     it('should get the value', function () {
-      valueForKeypath(this.obj, "foo['bar']['baz']").should.eql(this.obj.foo.bar.baz);
+      valueForKeypath.get(this.obj, "foo['bar']['baz']").should.eql(this.obj.foo.bar.baz);
     });
   });
 });

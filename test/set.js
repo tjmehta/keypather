@@ -1,11 +1,11 @@
-var valueForKeypath = require('../index');
+var valueForKeypath = require('../index')();
 
 describe('set and then get', function () {
-  describe("valueForKeyPath(obj, 'foo.bar'), 'value'", set("foo", 'value'));
-  describe("valueForKeyPath(obj, 'foo.bar'), 'value'", set("foo.bar", 'value'));
-  describe("valueForKeyPath(obj, 'foo.bar'), 'value'", set("['foo'].bar", 'value'));
-  describe("valueForKeyPath(obj, 'foo['bar']'), 'value'", set("foo['bar']", 'value'));
-  describe("valueForKeyPath(obj, 'foo['bar']'), 'value'", set("['foo']['bar']", 'value'));
+  describe("valueForKeyPath.set(obj, 'foo.bar', 'value')", set("foo", 'value'));
+  describe("valueForKeyPath.set(obj, 'foo.bar', 'value')", set("foo.bar", 'value'));
+  describe("valueForKeyPath.set(obj, 'foo.bar', 'value')", set("['foo'].bar", 'value'));
+  describe("valueForKeyPath.set(obj, 'foo['bar']', 'value')", set("foo['bar']", 'value'));
+  describe("valueForKeyPath.set(obj, 'foo['bar']', 'value')", set("['foo']['bar']", 'value'));
 });
 
 function set (keypath, value) {
@@ -18,8 +18,8 @@ function set (keypath, value) {
       };
     });
     it('should set the value', function () {
-      valueForKeypath(this.obj, keypath, value);
-      valueForKeypath(this.obj, keypath).should.eql(value);
+      valueForKeypath.set(this.obj, keypath, value);
+      valueForKeypath.get(this.obj, keypath).should.eql(value);
     });
   };
 }
