@@ -1,30 +1,20 @@
-#value-for-keypath [![Build Status](https://travis-ci.org/tjmehta/value-for-keypath.png?branch=master)](https://travis-ci.org/tjmehta/value-for-keypath)
-##Get or Set value on an object using a keypath string. Supports bracket notation, dot notation, and functions
+# value-for-keypath [![Build Status](https://travis-ci.org/tjmehta/value-for-keypath.png?branch=master)](https://travis-ci.org/tjmehta/value-for-keypath)
 
-###installation
+Get or Set value on an object using a keypath string. Supports bracket notation, dot notation, and functions
+
+# installation
 ```bash
 npm install value-for-keypath
 ```
 
-### GET
-####mixed notation:
-```js
-var valueForKeypath = require('value-for-keypath');
-var obj = {
-  foo: function () {
-    return {
-      bar: {
-        baz: 'val'
-      }
-    };
-  }
-};
-valueForKeypath(obj, "foo()['bar'].baz"); // val
-```
+# Examples
 
-####dot notation:
+## GET
+
+dot notation, bracket notation, and functions all supported:
+
 ```js
-var valueForKeypath = require('value-for-keypath');
+var keypath = require('value-for-keypath')();
 var obj = {
   foo: {
     bar: {
@@ -32,25 +22,12 @@ var obj = {
     }
   }
 };
-valueForKeypath(obj, "foo.bar.baz"); // val
+keypath.get(obj, "foo.bar.baz"); // val
+keypath.get(obj, "['foo']['bar']['baz']"); // val
 ```
 
-####bracket notation:
 ```js
-var valueForKeypath = require('value-for-keypath');
-var obj = {
-  foo: {
-    bar: {
-      baz: 'val'
-    }
-  }
-};
-valueForKeypath(obj, "['foo']['bar']['baz']"); // val
-```
-
-####functions:
-```js
-var valueForKeypath = require('value-for-keypath');
+var keypath = require('value-for-keypath')();
 var obj = {
   foo: function () {
     return function () {
@@ -60,13 +37,44 @@ var obj = {
     };
   }
 };
-valueForKeypath(obj, "foo()()()"); // val
+keypath.get(obj, "foo()()()"); // val
 ```
 
-### SET
-####mixed notation:
 ```js
-var valueForKeypath = require('value-for-keypath');
+var keypath = require('value-for-keypath')();
+var obj = {
+  foo: function () {
+    return {
+      bar: {
+        baz: 'val'
+      }
+    };
+  }
+};
+keypath.get(obj, "foo()['bar'].baz"); // val
+```
+
+Get returns null for keypaths that do not exist by default,
+but can also throw errors with `{ force: false }`
+
+```js
+var keypath = require('value-for-keypath')(); // equivalent to { force:true }
+var obj = {};
+keypath.get(obj, "foo.bar.baz"); // null
+
+var keypath = require('value-for-keypath')( force: false );
+var obj = {};
+keypath.get(obj, "foo.bar.baz");
+// throw's an error
+// Error: Cannot get 'foo' of undefined
+```
+
+## SET
+
+mixed notation, dot notation, and bracket notation all supported:
+
+```js
+var keypath = require('value-for-keypath')();
 var obj = {
   foo: {
       bar: {
@@ -75,31 +83,31 @@ var obj = {
     }
   }
 };
-valueForKeypath(this.obj, "foo['bar'].baz", 'value'); // value
+keypath.set(obj, "foo['bar'].baz", 'value'); // value
+keypath.set(obj, "foo.bar.baz", 'value'); // value
+keypath.set(obj, "['foo']['bar']['baz']", 'value'); // value
 ```
 
-####dot notation:
+ Set forces creation by default:
+
 ```js
-var valueForKeypath = require('value-for-keypath');
-var obj = {
-  foo: {
-    bar: {
-      baz: 'val'
-    }
-  }
-};
-valueForKeypath(this.obj, "foo.bar.baz", 'value'); // value
+var keypath = require('value-for-keypath')(); // equivalent to { force:true }
+var obj = {};
+keypath.set(obj, "foo.bar.baz", 'val'); // value
+// obj = {
+//   foo: {
+//     bar: {
+//       baz: 'val'
+//     }
+//   }
+// };
+
+var keypath = require('value-for-keypath')( force: false );
+var obj = {};
+keypath.set(obj, "foo.bar.baz", 'val');
+// throw's an error
+// Error: Cannot get 'foo' of undefined
 ```
 
-####bracket notation:
-```js
-var valueForKeypath = require('value-for-keypath');
-var obj = {
-  foo: {
-    bar: {
-      baz: 'val'
-    }
-  }
-};
-valueForKeypath(this.obj, "['foo']['bar']['baz']", 'value'); // value
-```
+# License
+### MIT
