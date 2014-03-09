@@ -1,6 +1,6 @@
 # keypather [![Build Status](https://travis-ci.org/tjmehta/keypather.png?branch=master)](https://travis-ci.org/tjmehta/keypather)
 
-Get or Set value on an object using a keypath string. Supports bracket notation, dot notation, and functions
+Get or set a object values from a keypath string. Supports bracket notation, dot notation, and functions
 
 # installation
 ```bash
