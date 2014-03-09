@@ -1,4 +1,4 @@
-#value-for-keypath
+#value-for-keypath [![Build Status](https://travis-ci.org/tjmehta/value-for-keypath.png?branch=master)](https://travis-ci.org/tjmehta/value-for-keypath)
 ##Get or Set value on an object using a keypath string. Supports bracket notation, dot notation, and functions
 
 ###installation
@@ -68,15 +68,14 @@ valueForKeypath(obj, "foo()()()"); // val
 ```js
 var valueForKeypath = require('value-for-keypath');
 var obj = {
-  foo: function () {
-    return {
+  foo: {
       bar: {
         baz: 'val'
       }
-    };
+    }
   }
 };
-valueForKeypath(this.obj, "foo()['bar'].baz", 'value'); // val
+valueForKeypath(this.obj, "foo['bar'].baz", 'value'); // value
 ```
 
 ####dot notation:
@@ -89,7 +88,7 @@ var obj = {
     }
   }
 };
-valueForKeypath(this.obj, "foo.bar.baz"); // val
+valueForKeypath(this.obj, "foo.bar.baz", 'value'); // value
 ```
 
 ####bracket notation:
@@ -102,5 +101,5 @@ var obj = {
     }
   }
 };
-valueForKeypath(this.obj, "['foo']['bar']['baz']", 'value'); // val
+valueForKeypath(this.obj, "['foo']['bar']['baz']", 'value'); // value
 ```
