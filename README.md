@@ -11,7 +11,7 @@ npm install keypather
 
 ## GET
 
-dot notation, bracket notation, and functions all supported:
+dot notation, bracket notation, and functions (even with arguments) all supported:
 
 ```js
 var keypath = require('keypather')();
@@ -52,6 +52,24 @@ var obj = {
   }
 };
 keypath.get(obj, "foo()['bar'].baz"); // val
+```
+functions with arguments
+```js
+var keypath = require('keypather')();
+var obj = {
+  create: function (data) {
+    var data = data;
+    return {
+      get: function (key) {
+        return data[key];
+      }
+    };
+  }
+};
+keypath.get(obj, "create(%).get(%)", [{foo:1, bar:2}], ['foo']); // 1
+keypath.get(obj, "create(%).get(%)", {foo:1, bar:2}, 'foo'); // 1, single args are automatically placed in arrays
+// technically you can use anything (except dots, parens, brackets, or empty string)
+// between the parens of functions that accept args (in place of %)
 ```
 
 Get returns null for keypaths that do not exist by default,

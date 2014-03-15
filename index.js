@@ -6,10 +6,11 @@ var valueForKeypath = module.exports = function (opts) {
 function Keypather (force) {
   this.force = (force !== undefined) ? Boolean(force) : true; // force - default: true
 }
-Keypather.prototype.get = function (obj, keypath) {
+Keypather.prototype.get = function (obj, keypath /*, fnArgs... */) {
   this.obj = obj;
   this.create = false;
   this.keypathSplit = keypath.split('.');
+  this.fnArgs = Array.prototype.slice.call(arguments, 2).map(makeArray);
   return this.keypathSplit.reduce(this.getValue.bind(this), obj);
 };
 Keypather.prototype.set = function (obj, keypath, value) {
@@ -33,19 +34,20 @@ Keypather.prototype.set = function (obj, keypath, value) {
   return value;
 };
 
-
 // internal
 Keypather.prototype.getValue = function (val, keyPart) {
-  this.indexParens = keyPart.indexOf('()');
+  this.indexOpenParen = keyPart.indexOf('(');
+  this.indexCloseParen = keyPart.indexOf(')');
   this.indexOpenBracket = keyPart.indexOf('[');
   this.indexCloseBracket = keyPart.indexOf(']');
-  var keyHasParens   = ~this.indexParens;
-  var keyHasBrackets = ~this.indexOpenBracket && ~this.indexCloseBracket;
+  var keyHasParens = ~this.indexOpenParen && ~this.indexCloseParen && (this.indexOpenParen < this.indexCloseParen);
+  var keyHasBrackets = ~this.indexOpenBracket && ~this.indexCloseBracket && (this.indexOpenBracket < this.indexCloseBracket);
   this.lastVal = val;
+  var vle;
   if (!keyHasParens && !keyHasBrackets) {
     return this.handleKey(val, keyPart);
   }
-  else if (keyHasParens && (!keyHasBrackets || this.indexParens < this.indexOpenBracket)) {
+  else if (keyHasParens && (!keyHasBrackets || this.indexOpenParen < this.indexOpenBracket)) {
     return this.handleFunction(val, keyPart);
   }
   else {
@@ -60,19 +62,25 @@ Keypather.prototype.handleKey = function (val, key) {
       null : val[key];
 };
 Keypather.prototype.handleFunction = function (val, keyPart) {
-  var subKey = keyPart.slice(0, this.indexParens);
+  var subKey = keyPart.slice(0, this.indexOpenParen), ctx;
   if (subKey) {
     if (this.create && !exists(val[subKey])) {
       throw new Error('KeypathSetError: cannot force create a path where a function does not exist');
     }
-    val = (this.force && !exists(val[subKey])) ?
-      null : val[subKey]();
+    ctx = val;
+    val = (this.force && !exists(val[subKey])) ? null :
+      (this.indexOpenParen+1 === this.indexCloseParen) ?
+        val[subKey].call(ctx) :
+        val[subKey].apply(ctx, this.fnArgs.pop() || []);
   }
   else {
-    val = (this.force && !exists(val)) ?
-      null : val.call(this.lastVal || global); // maintain context
+    ctx = this.lastVal || global;
+    val = (this.force && !exists(val)) ? null :
+      (this.indexOpenParen+1 === this.indexCloseParen) ? // maintain context (this.lastVal)
+        val.call(ctx) :
+        val.apply(ctx, this.fnArgs.pop() || []);
   }
-  keyPart = keyPart.slice(this.indexParens+2); // update key, slice of function
+  keyPart = keyPart.slice(this.indexCloseParen+1); // update key, slice of function
   return keyPart ? // if keypart left, back to back fn or brackets so recurse
     this.getValue(val, keyPart) : val;
 };
@@ -125,4 +133,7 @@ function parseBracketKey (key) {
 
 function exists (val) {
   return val !== null && val !== undefined;
+}
+function makeArray (val) {
+  return Array.isArray(val) ? val : [val];
 }
