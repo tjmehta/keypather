@@ -127,5 +127,31 @@ keypath.set(obj, "foo.bar.baz", 'val');
 // Error: Cannot get 'foo' of undefined
 ```
 
+## DEL
+
+mixed notation, dot notation, and bracket notation all supported:
+
+```js
+var keypath = require('keypather')();
+var obj = {
+  foo: {
+      bar: {
+        baz: 'val'
+      }
+    }
+  }
+};
+keypath.del(obj, "foo['bar'].baz");        // true
+keypath.del(obj, "foo.bar.baz");           // true
+keypath.del(obj, "['foo']['bar']['baz']"); // true
+// obj:
+// {
+//   foo: {
+//     bar: {}
+//   }
+// }
+
+```
+
 # License
 ### MIT

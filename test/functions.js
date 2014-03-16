@@ -43,7 +43,7 @@ describe('functions', function () {
       // keypather.get(this.obj, '[foo].bar()').should.eql(this.obj.foo.bar());
     });
   });
-  describe("keypather.get(obj, 'foo.bar(...)', arg)", function () {
+  describe("keypather.get(obj, 'foo.bar(%)', arg)", function () {
     before(function () {
       this.obj = {
         foo: {
@@ -57,7 +57,7 @@ describe('functions', function () {
       keypather.get(this.obj, 'foo.ret(%)', 1).should.equal(this.obj.foo.ret(1));
     });
   });
-  describe("keypather.get(obj, 'foo.bar(...)', args)", function () {
+  describe("keypather.get(obj, 'foo.bar(%)', args)", function () {
     before(function () {
       this.obj = {
         foo: {

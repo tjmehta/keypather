@@ -13,9 +13,10 @@ Keypather.prototype.get = function (obj, keypath /*, fnArgs... */) {
   this.fnArgs = Array.prototype.slice.call(arguments, 2).map(makeArray);
   return this.keypathSplit.reduce(this.getValue.bind(this), obj);
 };
-Keypather.prototype.set = function (obj, keypath, value) {
+Keypather.prototype.set = function (obj, keypath, value  /*, fnArgs... */) {
   this.obj = obj;
   this.create = this.force;
+  this.fnArgs = Array.prototype.slice.call(arguments, 3).map(makeArray);
   if (keypath.match(/\(\)$/)) {
     throw new Error("Invalid left-hand side in assignment");
   }
@@ -32,6 +33,30 @@ Keypather.prototype.set = function (obj, keypath, value) {
     obj[keypath] = value;
   }
   return value;
+};
+Keypather.prototype.del = function (obj, keypath  /*, fnArgs... */) {
+  this.obj = obj;
+  this.create = false;
+  if (last(keypath) === ')') {
+    // deletes function result..does nothing. equivalent to invoking function and returning true
+    this.get(obj, keypath);
+    return true;
+  }
+
+  this.keypathSplit = keypath.split('.');
+  var lastKey = this.getLastKey();
+  var val;
+  if (this.keypathSplit.length === 0) {
+    val = obj;
+  }
+  else {
+    var getArgs = Array.prototype.slice.call(arguments);
+    getArgs[1] = this.keypathSplit.join('.');
+    val = this.get.apply(this, getArgs);
+  }
+
+  delete val[lastKey];
+  return true;
 };
 
 // internal
@@ -112,6 +137,23 @@ Keypather.prototype.handleBrackets = function (val, keyPart) {
       this.getValue(val, keyPart) : val;
   }
 };
+Keypather.prototype.getLastKey = function () {
+  var lastKeyPart = this.keypathSplit.pop();
+  var indexOpenBracket = lastKeyPart.lastIndexOf('[');
+  var indexCloseBracket = lastKeyPart.lastIndexOf(']');
+  var keyHasBrackets = ~indexOpenBracket && ~indexCloseBracket && (indexOpenBracket < indexCloseBracket);
+
+  if (keyHasBrackets) {
+    var bracketKey = lastKeyPart.slice(indexOpenBracket+1, indexCloseBracket);
+    bracketKey = parseBracketKey(bracketKey);
+    lastKeyPart = lastKeyPart.slice(0, indexOpenBracket);
+    this.keypathSplit.push(lastKeyPart);
+    return bracketKey;
+  }
+  else {
+    return lastKeyPart;
+  }
+};
 Keypather.prototype.createPath = function (val /*, keys */) {
   var keys = Array.prototype.slice.call(arguments, 1);
   return keys.reduce(function (val, key) {
@@ -133,6 +175,9 @@ function parseBracketKey (key) {
 
 function exists (val) {
   return val !== null && val !== undefined;
+}
+function last (arrOrStr) {
+  return arrOrStr[arrOrStr.length - 1];
 }
 function makeArray (val) {
   return Array.isArray(val) ? val : [val];
