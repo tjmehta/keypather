@@ -93,7 +93,7 @@ Keypather.prototype.handleFunction = function (val, keyPart) {
       throw new Error('KeypathSetError: cannot force create a path where a function does not exist');
     }
     ctx = val;
-    val = (this.force && !exists(val) && !exists(val[subKey])) ? null :
+    val = (this.force && (!exists(val) || !exists(val[subKey]))) ? null :
       (this.indexOpenParen+1 === this.indexCloseParen) ?
         val[subKey].call(ctx) :
         val[subKey].apply(ctx, this.fnArgs.pop() || []);
