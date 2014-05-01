@@ -113,7 +113,7 @@ Keypather.prototype.handleBrackets = function (val, keyPart) {
   var subKey = keyPart.slice(0, this.indexOpenBracket);
   var bracketKey = keyPart.slice(this.indexOpenBracket+1, this.indexCloseBracket);
   bracketKey = parseBracketKey(bracketKey);
-  if (!bracketKey) {
+  if (!exists(bracketKey)) {
     // invalid bracket structure, use key as is.
     return this.handleKey(val, keyPart);
   }
