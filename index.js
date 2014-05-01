@@ -8,6 +8,7 @@ function Keypather (force) {
 }
 Keypather.prototype.get = function (obj, keypath /*, fnArgs... */) {
   this.obj = obj;
+  keypath = keypath + '';
   this.create = false;
   this.keypathSplit = keypath.split('.');
   this.fnArgs = Array.prototype.slice.call(arguments, 2).map(makeArray);
@@ -15,6 +16,7 @@ Keypather.prototype.get = function (obj, keypath /*, fnArgs... */) {
 };
 Keypather.prototype.set = function (obj, keypath, value  /*, fnArgs... */) {
   this.obj = obj;
+  keypath = keypath + '';
   this.create = this.force;
   this.fnArgs = Array.prototype.slice.call(arguments, 3).map(makeArray);
   if (keypath.match(/\(\)$/)) {
@@ -36,6 +38,7 @@ Keypather.prototype.set = function (obj, keypath, value  /*, fnArgs... */) {
 };
 Keypather.prototype.del = function (obj, keypath  /*, fnArgs... */) {
   this.obj = obj;
+  keypath = keypath + '';
   this.create = false;
   if (last(keypath) === ')') {
     // deletes function result..does nothing. equivalent to invoking function and returning true
