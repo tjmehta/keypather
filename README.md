@@ -131,13 +131,53 @@ keypath.set(obj, "foo.bar.baz", 'val');
 
 Equivalent to `key in obj`
 
+```js
+var keypath = require('keypather')();
+var obj = {
+  foo: {
+      bar: {
+        baz: 'val'
+      }
+    }
+  }
+};
+keypath.in(obj, "foo['bar'].baz");        // true
+keypath.in(obj, "foo.bar.baz");           // true
+keypath.in(obj, "['foo']['bar']['baz']"); // true
+// obj:
+// {
+//   foo: {
+//     bar: {}
+//   }
+// }
 
+```
 
 ## HAS
 
 Equivalent to `obj.hasOwnProperty`
 
+```js
+var keypath = require('keypather')();
+var obj = {
+  foo: {
+      bar: {
+        baz: 'val'
+      }
+    }
+  }
+};
+keypath.has(obj, "foo['bar'].baz");        // true
+keypath.has(obj, "foo.bar.baz");           // true
+keypath.has(obj, "['foo']['bar']['baz']"); // true
+// obj:
+// {
+//   foo: {
+//     bar: {}
+//   }
+// }
 
+```
 
 ## DEL
 
