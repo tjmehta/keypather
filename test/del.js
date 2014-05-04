@@ -1,13 +1,13 @@
 var keypather = require('../index')();
 
 describe('del', function () {
-  describe("valueForKeyPath.del(obj, 'foo.bar', 'value')", del("foo.bar", 'value'));
-  describe("valueForKeyPath.del(obj, 'foo.bar', 'value')", del("['foo'].bar", 'value'));
-  describe("valueForKeyPath.del(obj, 'foo['bar']', 'value')", del("foo['bar']", 'value'));
-  describe("valueForKeyPath.del(obj, 'foo['bar']', 'value')", del("['foo']['bar']", 'value'));
+  describe("keypather.del(obj, 'foo.bar')", del("foo.bar"));
+  describe("keypather.del(obj, 'foo.bar')", del("['foo'].bar"));
+  describe("keypather.del(obj, 'foo['bar']')", del("foo['bar']"));
+  describe("keypather.del(obj, 'foo['bar']')", del("['foo']['bar']"));
 });
 
-function del (keypath, value) {
+function del (keypath) {
   return function () {
     before(function () {
       this.obj = {
