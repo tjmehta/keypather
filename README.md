@@ -127,9 +127,21 @@ keypath.set(obj, "foo.bar.baz", 'val');
 // Error: Cannot get 'foo' of undefined
 ```
 
+## IN
+
+Equivalent to `key in obj`
+
+
+
+## HAS
+
+Equivalent to `obj.hasOwnProperty`
+
+
+
 ## DEL
 
-mixed notation, dot notation, and bracket notation all supported:
+Equivalent to `delete obj.key`
 
 ```js
 var keypath = require('keypather')();

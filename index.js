@@ -36,27 +36,47 @@ Keypather.prototype.set = function (obj, keypath, value  /*, fnArgs... */) {
   }
   return value;
 };
+Keypather.prototype.in = function (obj, keypath) {
+  this.obj = obj;
+  keypath = keypath + '';
+  this.create = false;
+  if (last(keypath) === ')') {
+    throw new TypeError('keypath should not end in a function');
+  }
+
+  this.keypathSplit = keypath.split('.');
+  var lastKey = this.getLastKey();
+  var val = this.getLastObj(arguments);
+
+  return lastKey in val;
+};
+Keypather.prototype.has = function (obj, keypath) {
+  this.obj = obj;
+  keypath = keypath + '';
+  this.create = false;
+  if (last(keypath) === ')') {
+    throw new TypeError('keypath should not end in a function');
+  }
+
+  this.keypathSplit = keypath.split('.');
+  var lastKey = this.getLastKey();
+  var val = this.getLastObj(arguments);
+
+  return val.hasOwnProperty(lastKey);
+};
 Keypather.prototype.del = function (obj, keypath  /*, fnArgs... */) {
   this.obj = obj;
   keypath = keypath + '';
   this.create = false;
   if (last(keypath) === ')') {
     // deletes function result..does nothing. equivalent to invoking function and returning true
-    this.get(obj, keypath);
+    // this.get(obj, keypath); // not even necessary since this doesnt actually do anything
     return true;
   }
 
   this.keypathSplit = keypath.split('.');
   var lastKey = this.getLastKey();
-  var val;
-  if (this.keypathSplit.length === 0) {
-    val = obj;
-  }
-  else {
-    var getArgs = Array.prototype.slice.call(arguments);
-    getArgs[1] = this.keypathSplit.join('.');
-    val = this.get.apply(this, getArgs);
-  }
+  var val = this.getLastObj(arguments);
 
   delete val[lastKey];
   return true;
@@ -156,6 +176,18 @@ Keypather.prototype.getLastKey = function () {
   else {
     return lastKeyPart;
   }
+};
+Keypather.prototype.getLastObj = function (args) {
+  var val;
+  if (this.keypathSplit.length === 0) {
+    val = args[0];
+  }
+  else {
+    var getArgs = Array.prototype.slice.call(args);
+    getArgs[1] = this.keypathSplit.join('.');
+    val = this.get.apply(this, getArgs);
+  }
+  return val;
 };
 Keypather.prototype.createPath = function (val /*, keys */) {
   var keys = Array.prototype.slice.call(arguments, 1);
