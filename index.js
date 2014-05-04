@@ -48,6 +48,9 @@ Keypather.prototype.in = function (obj, keypath) {
   var lastKey = this.getLastKey();
   var val = this.getLastObj(arguments);
 
+  if (this.force && !val) {
+    return false;
+  }
   return lastKey in val;
 };
 Keypather.prototype.has = function (obj, keypath) {
@@ -62,6 +65,9 @@ Keypather.prototype.has = function (obj, keypath) {
   var lastKey = this.getLastKey();
   var val = this.getLastObj(arguments);
 
+  if (this.force && !val) {
+    return false;
+  }
   return val.hasOwnProperty(lastKey);
 };
 Keypather.prototype.del = function (obj, keypath  /*, fnArgs... */) {
@@ -78,6 +84,9 @@ Keypather.prototype.del = function (obj, keypath  /*, fnArgs... */) {
   var lastKey = this.getLastKey();
   var val = this.getLastObj(arguments);
 
+  if (this.force && !val) {
+    return true;
+  }
   delete val[lastKey];
   return true;
 };
