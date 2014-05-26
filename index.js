@@ -1,4 +1,4 @@
-var valueForKeypath = module.exports = function (opts) {
+var keypather = module.exports = function (opts) {
   var keypather = new Keypather(opts && opts.force);
   return keypather;
 };
@@ -10,7 +10,7 @@ Keypather.prototype.get = function (obj, keypath /*, fnArgs... */) {
   this.obj = obj;
   keypath = keypath + '';
   this.create = false;
-  this.keypathSplit = keypath.split('.');
+  this.keypathSplit = this.splitKeypath(keypath);
   this.fnArgs = Array.prototype.slice.call(arguments, 2).map(makeArray);
   return this.keypathSplit.reduce(this.getValue.bind(this), obj);
 };
@@ -44,7 +44,7 @@ Keypather.prototype.in = function (obj, keypath) {
     throw new TypeError('keypath should not end in a function');
   }
 
-  this.keypathSplit = keypath.split('.');
+  this.keypathSplit = this.splitKeypath(keypath);
   var lastKey = this.getLastKey();
   var val = this.getLastObj(arguments);
 
@@ -61,7 +61,7 @@ Keypather.prototype.has = function (obj, keypath) {
     throw new TypeError('keypath should not end in a function');
   }
 
-  this.keypathSplit = keypath.split('.');
+  this.keypathSplit = this.splitKeypath(keypath);
   var lastKey = this.getLastKey();
   var val = this.getLastObj(arguments);
 
@@ -80,7 +80,8 @@ Keypather.prototype.del = function (obj, keypath  /*, fnArgs... */) {
     return true;
   }
 
-  this.keypathSplit = keypath.split('.');
+  this.keypathSplit = this.splitKeypath(keypath);
+  this.fnArgs = Array.prototype.slice.call(arguments, 2).map(makeArray);
   var lastKey = this.getLastKey();
   var val = this.getLastObj(arguments);
 
@@ -92,6 +93,40 @@ Keypather.prototype.del = function (obj, keypath  /*, fnArgs... */) {
 };
 
 // internal
+Keypather.prototype.splitKeypath = function (keypath) {
+  var dotSplit = keypath.split('.');
+  var split = [];
+  var open = false;
+  var buffer, preParen;
+  dotSplit.forEach(function groupParens (part) {
+    var parenSplit, leftover;
+    if (!open && ~part.indexOf('(')) {
+      open = true;
+      buffer = [];
+      parenSplit = part.split('(');
+      preParen = parenSplit.shift() || '';
+      leftover = parenSplit.join('(');
+      if (leftover.length) groupParens(leftover);
+    }
+    else if (open) {
+      if (~part.indexOf(')')) {
+        open = false;
+        parenSplit = part.split(')');
+        buffer.push(parenSplit.shift());
+        split.push(preParen+'('+buffer.join('.')+')');
+        leftover = parenSplit.join(')');
+        if (leftover.length) groupParens(leftover);
+      }
+      else {
+        buffer.push(part);
+      }
+    }
+    else {
+      split.push(part);
+    }
+  });
+  return split;
+};
 Keypather.prototype.getValue = function (val, keyPart) {
   this.indexOpenParen = keyPart.indexOf('(');
   this.indexCloseParen = keyPart.indexOf(')');
@@ -100,7 +135,6 @@ Keypather.prototype.getValue = function (val, keyPart) {
   var keyHasParens = ~this.indexOpenParen && ~this.indexCloseParen && (this.indexOpenParen < this.indexCloseParen);
   var keyHasBrackets = ~this.indexOpenBracket && ~this.indexCloseBracket && (this.indexOpenBracket < this.indexCloseBracket);
   this.lastVal = val;
-  var vle;
   if (!keyHasParens && !keyHasBrackets) {
     return this.handleKey(val, keyPart);
   }
@@ -120,6 +154,7 @@ Keypather.prototype.handleKey = function (val, key) {
 };
 Keypather.prototype.handleFunction = function (val, keyPart) {
   var subKey = keyPart.slice(0, this.indexOpenParen), ctx;
+  var argsStr = keyPart.slice(this.indexOpenParen+1, this.indexCloseParen);
   if (subKey) {
     if (this.create && !exists(val[subKey])) {
       throw new Error('KeypathSetError: cannot force create a path where a function does not exist');
@@ -128,14 +163,14 @@ Keypather.prototype.handleFunction = function (val, keyPart) {
     val = (this.force && (!exists(val) || !exists(val[subKey]))) ? null :
       (this.indexOpenParen+1 === this.indexCloseParen) ?
         val[subKey].call(ctx) :
-        val[subKey].apply(ctx, this.fnArgs.pop() || []);
+        val[subKey].apply(ctx, this.parseFunctionArgs(argsStr));
   }
   else {
     ctx = this.lastVal || global;
     val = (this.force && !exists(val)) ? null :
       (this.indexOpenParen+1 === this.indexCloseParen) ? // maintain context (this.lastVal)
         val.call(ctx) :
-        val.apply(ctx, this.fnArgs.pop() || []);
+        val.apply(ctx, this.parseFunctionArgs(argsStr));
   }
   keyPart = keyPart.slice(this.indexCloseParen+1); // update key, slice of function
   return keyPart ? // if keypart left, back to back fn or brackets so recurse
@@ -205,6 +240,35 @@ Keypather.prototype.createPath = function (val /*, keys */) {
     return val[key];
   }, val);
 };
+Keypather.prototype.parseFunctionArgs = function (argsStr) {
+  argsStr = argsStr.trim();
+  if (argsStr.length === 0) {
+    return [];
+  }
+  else if (argsStr==='%') {
+    return this.fnArgs.pop() || [];
+  }
+  var argsSplit = argsStr.split(',').map(trim);
+  var replacementArgs;
+  var self = this;
+  return argsSplit.map(function (arg) {
+    if (arg==='%') {
+      replacementArgs = replacementArgs || self.fnArgs.pop() || [];
+      arg = replacementArgs.pop();
+      return arg;
+    }
+    else {
+      var parsed = parseBracketKey(arg);
+      parsed = exists(parsed) ? parsed : keypather().get(self.obj, arg);
+      if (parsed) {
+        return parsed;
+      }
+      else {
+        throw new ReferenceError('KeypatherError: Invalid function argument "'+arg+'"');
+      }
+    }
+  });
+};
 
 function parseBracketKey (key) {
   key = key.replace(/'/g, '"'); // single quotes to double
@@ -212,7 +276,7 @@ function parseBracketKey (key) {
     return JSON.parse(key);
   }
   catch (err) { //invalid
-    console.error(err);
+    // console.error(err);
     return;
   }
 }
@@ -225,4 +289,7 @@ function last (arrOrStr) {
 }
 function makeArray (val) {
   return Array.isArray(val) ? val : [val];
+}
+function trim (str) {
+  return str.trim();
 }

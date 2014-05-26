@@ -4,6 +4,7 @@
   "description": "Get or set a object values from a keypath string. Supports bracket notation, dot notation, and functions",
   "main": "index.js",
   "scripts": {
+    "test-watch": "nodemon --delay 1 -w *.js -w lib -w test -w configs -x npm test",
     "test": "mocha"
   },
   "repository": {
@@ -39,6 +40,7 @@
   "dependencies": {},
   "devDependencies": {
     "should": "~3.1.2",
-    "mocha": "~1.17.1"
+    "mocha": "~1.17.1",
+    "nodemon": "~1.0.20"
   }
 }

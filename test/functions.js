@@ -43,7 +43,7 @@ describe('functions', function () {
       // keypather.get(this.obj, '[foo].bar()').should.eql(this.obj.foo.bar());
     });
   });
-  describe("keypather.get(obj, 'foo.bar(%)', arg)", function () {
+  describe("keypather.get(obj, 'foo.ret(%)', arg)", function () {
     before(function () {
       this.obj = {
         foo: {
@@ -57,7 +57,7 @@ describe('functions', function () {
       keypather.get(this.obj, 'foo.ret(%)', 1).should.equal(this.obj.foo.ret(1));
     });
   });
-  describe("keypather.get(obj, 'foo.bar(%)', args)", function () {
+  describe("keypather.get(obj, 'foo.sum(%)', args)", function () {
     before(function () {
       this.obj = {
         foo: {
@@ -69,6 +69,83 @@ describe('functions', function () {
     });
     it('should invoke bar with args', function () {
       keypather.get(this.obj, 'foo.sum(%).toString()', [1,2,3]).should.equal(this.obj.foo.sum(1,2,3).toString());
+    });
+  });
+  describe("keypather.get(obj, 'foo.sum(1,2,3)'", function () {
+    before(function () {
+      this.obj = {
+        foo: {
+          sum: function (a, b, c) {
+            return a + b + c;
+          }
+        }
+      };
+    });
+    it('should invoke bar with args', function () {
+      keypather.get(this.obj, 'foo.sum(1,2,3)').should.equal(this.obj.foo.sum(1,2,3));
+    });
+  });
+  describe("keypather.get(obj, 'foo.sum(1,'whoa',3)'", function () {
+    before(function () {
+      this.obj = {
+        foo: {
+          sum: function (a, b, c) {
+            return a + b + c;
+          }
+        }
+      };
+    });
+    it('should invoke bar with args', function () {
+      keypather.get(this.obj, 'foo.sum(1,"whoa",3)').should.equal(this.obj.foo.sum(1,"whoa",3));
+    });
+  });
+  describe("keypather.get(obj, 'foo.sum(1,2,3)'", function () {
+    before(function () {
+      this.obj = {
+        foo: {
+          sum: function (a, b, c) {
+            return a + b + c;
+          }
+        }
+      };
+    });
+    it('should invoke bar with args', function () {
+      keypather.get(this.obj, 'foo.sum(1,%,3)', 2).should.equal(this.obj.foo.sum(1,2,3));
+    });
+  });
+  describe("keypather.get(obj, 'foo.sum(1,foo.bar,3)'", function () {
+    before(function () {
+      this.obj = {
+        foo: {
+          bar: 2,
+          sum: function (a, b, c) {
+            return a + b + c;
+          }
+        }
+      };
+    });
+    it('should invoke bar with args', function () {
+      keypather.get(this.obj, 'foo.sum(1,foo.bar,3)').should.equal(this.obj.foo.sum(1,this.obj.foo.bar,3));
+    });
+  });
+  describe("keypather.get(obj, 'foo.sum(1,foo.bar,3)'", function () {
+    before(function () {
+      this.obj = {
+        foo: {
+          bar: 2,
+          sum: function (a, b, c) {
+            return a + b + c;
+          }
+        }
+      };
+    });
+    it('should invoke bar with args', function () {
+      try {
+        keypather.get(this.obj, 'foo.sum(1,foo.bogus.bogus,3)').should.equal(this.obj.foo.sum(1,this.obj.foo.bar,3));
+      }
+      catch (err) {
+        err.message.should.match(/foo[.]bogus[.]bogus/);
+      }
     });
   });
 });
