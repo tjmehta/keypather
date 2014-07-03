@@ -24,7 +24,7 @@ Keypather.prototype.set = function (obj, keypath, value  /*, fnArgs... */) {
   }
   var match = keypath.match(/(.*)([.]|\[["'])([^.\[]+)$/);
   if (match) {
-    lastKey = match[2]+match[3];
+    var lastKey = match[2]+match[3];
     lastKey = ~lastKey.indexOf('.') ?
       lastKey.slice(1) :
       lastKey.slice(2, -2);
