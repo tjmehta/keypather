@@ -148,4 +148,19 @@ describe('functions', function () {
       }
     });
   });
+  describe("keypather.get(obj, 'foo.ret(foo.bar)'", function () {
+    before(function () {
+      this.obj = {
+        foo: {
+          bar: '',
+          ret: function (val) {
+            return val;
+          }
+        }
+      };
+    });
+    it('should invoke bar with args (empty string)', function () {
+      keypather.get(this.obj, 'foo.ret(foo.bar)').should.equal(this.obj.foo.ret(this.obj.foo.bar));
+    });
+  });
 });
