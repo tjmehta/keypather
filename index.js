@@ -260,7 +260,7 @@ Keypather.prototype.parseFunctionArgs = function (argsStr) {
     else {
       var parsed = parseBracketKey(arg);
       parsed = exists(parsed) ? parsed : keypather().get(self.obj, arg);
-      if (parsed) {
+      if (exists(parsed)) {
         return parsed;
       }
       else {
