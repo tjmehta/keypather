@@ -1,11 +1,19 @@
 var keypather = require('../index')();
 
 describe('set and then get', function () {
-  describe("valueForKeyPath.set(obj, 'foo.bar', 'value')", set("foo", 'value'));
+  describe("valueForKeyPath.set(obj, 'foo', 'value')", set("foo", 'value'));
+  describe("valueForKeyPath.set(obj, 'new', 'value')", set("new", 'value'));
   describe("valueForKeyPath.set(obj, 'foo.bar', 'value')", set("foo.bar", 'value'));
-  describe("valueForKeyPath.set(obj, 'foo.bar', 'value')", set("['foo'].bar", 'value'));
+  describe("valueForKeyPath.set(obj, 'new.bar', 'value')", set("new.bar", 'value'));
+  describe("valueForKeyPath.set(obj, 'foo.new', 'value')", set("foo.new", 'value'));
+  describe("valueForKeyPath.set(obj, '[foo].bar', 'value')", set("['foo'].bar", 'value'));
+  describe("valueForKeyPath.set(obj, '['new'].bar', 'value')", set("['new'].bar", 'value'));
+  describe("valueForKeyPath.set(obj, 'foo[0].bar', 'value')", set("foo[0].bar", 'value'));
+  describe("valueForKeyPath.set(obj, '['foo'].new', 'value')", set("['foo'].new", 'value'));
   describe("valueForKeyPath.set(obj, 'foo['bar']', 'value')", set("foo['bar']", 'value'));
-  describe("valueForKeyPath.set(obj, 'foo['bar']', 'value')", set("['foo']['bar']", 'value'));
+  describe("valueForKeyPath.set(obj, 'new['bar']', 'value')", set("new['bar']", 'value'));
+  describe("valueForKeyPath.set(obj, '['foo']['bar']', 'value')", set("['foo']['bar']", 'value'));
+  describe("valueForKeyPath.set(obj, '['foo']['new']', 'value')", set("['foo']['new']", 'value'));
 });
 
 function set (keypath, value) {

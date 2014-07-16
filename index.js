@@ -186,8 +186,13 @@ Keypather.prototype.handleBrackets = function (val, keyPart) {
   }
   else {
     if (subKey) {
-      if (this.create && !exists(val[subKey])) {
-        return this.createPath(val, subKey, bracketKey);
+      if (this.create) {
+        if (!exists(val[subKey])) {
+          return this.createPath(val, subKey, bracketKey);
+        }
+        if (!exists(val[subKey][bracketKey])) {
+          return this.createPath(val[subKey], bracketKey);
+        }
       }
       val = (this.force && (!exists(val) || !exists(val[subKey]))) ?
         null : val[subKey][bracketKey];
