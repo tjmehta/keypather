@@ -9,14 +9,17 @@ describe('del', function () {
   describe("keypather.del(obj, '['foo'].no.no')", del("['foo'].no.no", true));
   describe("keypather.del(obj, 'foo['no']['no']')", del("foo['no']['no']", true));
   describe("keypather.del(obj, '['foo']['no']['no']')", del("['foo']['no']['no']", true));
+  describe("keypather.del(obj, 'foo.bar.boom')", del("foo.bar.boom", false, true));
 });
 
-function del (keypath, missing) {
+function del (keypath, missing, nestedMissing) {
   return function () {
     before(function () {
       this.obj = {
         foo: {
-          bar: 'orig-value',
+          bar: {
+            boom: 'orig-value'
+          },
           qux: 1
         }
       };
@@ -26,12 +29,20 @@ function del (keypath, missing) {
       if (missing) {
         this.obj.should.eql({
           foo: {
-            bar: 'orig-value',
+            bar: {
+              boom: 'orig-value'
+            },
             qux: 1
           }
         });
-      }
-      else {
+      } else if (nestedMissing) {
+        this.obj.should.eql({
+          foo: {
+            bar: {},
+            qux: 1
+          }
+        });
+      } else {
         this.obj.should.eql({
           foo: {
             qux: 1

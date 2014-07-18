@@ -6,10 +6,13 @@ var keypather = module.exports = function (opts) {
 function Keypather (force) {
   this.force = (force !== undefined) ? Boolean(force) : true; // force - default: true
 }
-Keypather.prototype.get = function (obj, keypath /*, fnArgs... */) {
+Keypather.prototype.get = function (/* obj, keypath, fnArgs... */) {
+  this.create = false;
+  return this._get.apply(this, arguments);
+};
+Keypather.prototype._get = function (obj, keypath /*, fnArgs... */) {
   this.obj = obj;
   keypath = keypath + '';
-  this.create = false;
   this.keypathSplit = this.splitKeypath(keypath);
   this.fnArgs = Array.prototype.slice.call(arguments, 2).map(makeArray);
   return this.keypathSplit.reduce(this.getValue.bind(this), obj);
@@ -29,7 +32,7 @@ Keypather.prototype.set = function (obj, keypath, value  /*, fnArgs... */) {
       lastKey.slice(1) :
       lastKey.slice(2, -2);
     var keypathWithoutLast = match[1];
-    this.getValue(obj, keypathWithoutLast)[lastKey] = value;
+    this._get(obj, keypathWithoutLast)[lastKey] = value;
   }
   else {
     obj[keypath] = value;
