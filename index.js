@@ -243,8 +243,13 @@ Keypather.prototype.getLastObj = function (args) {
 };
 Keypather.prototype.createPath = function (val /*, keys */) {
   var keys = Array.prototype.slice.call(arguments, 1);
-  return keys.reduce(function (val, key) {
-    val[key] = {};
+  return keys.reduce(function (val, key, i) {
+    if (typeof keys[i+1] === 'number') {
+      val[key] = [];
+    }
+    else {
+      val[key] = {};
+    }
     return val[key];
   }, val);
 };
