@@ -25,18 +25,11 @@ Keypather.prototype.set = function (obj, keypath, value  /*, fnArgs... */) {
   if (keypath.match(/\(\)$/)) {
     throw new Error("Invalid left-hand side in assignment");
   }
-  var match = keypath.match(/(.*)([.]|\[["'])([^.\[]+)$/);
-  if (match) {
-    var lastKey = match[2]+match[3];
-    lastKey = ~lastKey.indexOf('.') ?
-      lastKey.slice(1) :
-      lastKey.slice(2, -2);
-    var keypathWithoutLast = match[1];
-    this._get(obj, keypathWithoutLast)[lastKey] = value;
-  }
-  else {
-    obj[keypath] = value;
-  }
+
+  this.keypathSplit = this.splitKeypath(keypath);
+  var lastKey = this.getLastKey();
+  var val = this.getLastObj(arguments, true);
+  val[lastKey] = value;
   return value;
 };
 Keypather.prototype.in = function (obj, keypath) {
@@ -254,7 +247,7 @@ Keypather.prototype.getLastKey = function () {
     return lastKeyPart;
   }
 };
-Keypather.prototype.getLastObj = function (args) {
+Keypather.prototype.getLastObj = function (args, setOperation) {
   var val;
   if (this.keypathSplit.length === 0) {
     val = args[0];
@@ -262,7 +255,9 @@ Keypather.prototype.getLastObj = function (args) {
   else {
     var getArgs = Array.prototype.slice.call(args);
     getArgs[1] = this.keypathSplit.join('.');
-    val = this.get.apply(this, getArgs);
+    val = setOperation ?
+      this._get.apply(this, getArgs):
+      this.get.apply(this, getArgs);
   }
   return val;
 };

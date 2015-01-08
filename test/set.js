@@ -18,6 +18,10 @@ describe('set and then get', function () {
   describe("valueForKeyPath.set(obj, 'new.0.foo', 'value')", set("new.0.foo", 'value'));
   describe("valueForKeyPath.set(obj, 'new.bar.foo.boom', 'value')",
     set("new.bar.foo.boom", 'value'));
+  describe("valueForKeyPath.set(obj, '[\"new.bar.foo.boom\"]', 'value')",
+    set('["new.bar.foo.boom"]', 'value'));
+  describe("valueForKeyPath.set(obj, '[\"new.bar\"].what[\"foo.boom\"]', 'value')",
+    set('[\"new.bar\"].what[\"foo.boom\"]', 'value'));
 });
 
 function set (keypath, value) {
