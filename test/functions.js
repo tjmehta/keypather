@@ -27,6 +27,18 @@ describe('functions', function () {
       keypather.get(this.obj, 'foo()()').should.eql(this.obj.foo()());
     });
   });
+  describe("keypather.get(obj, '()()')", function () {
+    before(function () {
+      this.obj = function () {
+        return function () {
+          return 'val';
+        };
+      };
+    });
+    it('should get the value', function () {
+      keypather.get(this.obj, '()()').should.eql(this.obj()());
+    });
+  });
   describe("keypather.get(obj, 'foo.bar()')", function () {
     before(function () {
       this.obj = {

@@ -99,29 +99,54 @@ Keypather.prototype.del = function (obj, keypath  /*, fnArgs... */) {
 Keypather.prototype.splitKeypath = function (keypath) {
   var dotSplit = keypath.split('.');
   var split = [];
-  var open = false;
-  var buffer, preParen;
+  var openParen = false;
+  var openBracket = false;
+  var parenBuffer, bracketBuffer, preParen, preBracket;
   dotSplit.forEach(function groupParens (part) {
-    var parenSplit, leftover;
-    if (!open && ~part.indexOf('(')) {
-      open = true;
-      buffer = [];
+    var parenSplit, leftover, bracketSplit;
+    if (part.length === 0) {
+      return;
+    }
+    else if (!openParen && ~part.indexOf('(')) {
+      openParen = true;
+      parenBuffer = [];
       parenSplit = part.split('(');
       preParen = parenSplit.shift() || '';
       leftover = parenSplit.join('(');
       if (leftover.length) groupParens(leftover);
     }
-    else if (open) {
+    else if (openParen) {
       if (~part.indexOf(')')) {
-        open = false;
+        openParen = false;
         parenSplit = part.split(')');
-        buffer.push(parenSplit.shift());
-        split.push(preParen+'('+buffer.join('.')+')');
+        parenBuffer.push(parenSplit.shift());
+        split.push(preParen+'('+parenBuffer.join('.')+')');
         leftover = parenSplit.join(')');
         if (leftover.length) groupParens(leftover);
       }
       else {
-        buffer.push(part);
+        parenBuffer.push(part);
+      }
+    }
+    else if (!openBracket && ~part.indexOf('[')) {
+      openBracket = true;
+      bracketBuffer = [];
+      bracketSplit = part.split('[');
+      preBracket = bracketSplit.shift() || '';
+      leftover = bracketSplit.join('[');
+      if (leftover.length) groupParens(leftover);
+    }
+    else if (openBracket) {
+      if (~part.indexOf(']')) {
+        openBracket = false;
+        bracketSplit = part.split(']');
+        bracketBuffer.push(bracketSplit.shift());
+        split.push(preBracket+'['+bracketBuffer.join('.')+']');
+        leftover = bracketSplit.join(']');
+        if (leftover.length) groupParens(leftover);
+      }
+      else {
+        bracketBuffer.push(part);
       }
     }
     else {
