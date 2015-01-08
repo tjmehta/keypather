@@ -27,4 +27,13 @@ describe('bracket notation', function () {
       keypather.get(this.obj, "foo['bar']['baz']").should.eql(this.obj.foo.bar.baz);
     });
   });
+  describe("keypather.get(obj, '['foo.bar.baz']')", function () {
+    before(function () {
+      this.obj = {foo:{bar:{baz:'foo.bar.bas'}}};
+      this.obj['foo.bar.baz'] = Math.random();
+    });
+    it('should get the value', function () {
+      keypather.get(this.obj, "['foo.bar.baz']").should.eql(this.obj['foo.bar.baz']);
+    });
+  });
 });
