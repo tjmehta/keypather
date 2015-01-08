@@ -21,6 +21,8 @@ describe('has', function () {
   describe("keypather.has(obj, '['foo'].no.no')", keyInObject("['foo'].no.no", false));
   describe("keypather.has(obj, 'foo['no']['no']')", keyInObject("foo['no']['no']", false));
   describe("keypather.has(obj, '['foo']['no']['no']')", keyInObject("['foo']['no']['no']", false));
+  describe("keypather.has(obj, '['foo.bar']')", keyInObject("['foo.bar']", false));
+  describe("keypather.has(obj, 'foo['dot.path']')", keyInObject("foo['dot.path']", true));
 });
 
 function keyInObject (keypath, value) {
@@ -29,7 +31,8 @@ function keyInObject (keypath, value) {
       this.obj = {
         foo: {
           bar: 'value',
-          qux: 1
+          qux: 1,
+          'dot.path': 1
         }
       };
       Object.getPrototypeOf(this.obj.foo).deep = true;
