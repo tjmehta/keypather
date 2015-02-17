@@ -81,7 +81,7 @@ var keypath = require('keypather')(); // equivalent to { force:true }
 var obj = {};
 keypath.get(obj, "foo.bar.baz"); // null
 
-var keypath = require('keypather')( force: false );
+var keypath = require('keypather')({ force: false });
 var obj = {};
 keypath.get(obj, "foo.bar.baz");
 // throw's an error
@@ -121,7 +121,7 @@ keypath.set(obj, "foo.bar.baz", 'val'); // value
 //   }
 // };
 
-var keypath = require('keypather')( force: false );
+var keypath = require('keypather')({ force: false });
 var obj = {};
 keypath.set(obj, "foo.bar.baz", 'val');
 // throw's an error
