@@ -15,7 +15,7 @@ npm install keypather
 dot notation, bracket notation, and functions (even with arguments) all supported:
 
 ```js
-var keypath = require('keypather')();
+var keypath = require('keypather');
 var obj = {
   foo: {
     bar: {
@@ -28,7 +28,7 @@ keypath.get(obj, "['foo']['bar']['baz']"); // val
 ```
 
 ```js
-var keypath = require('keypather')();
+var keypath = require('keypather');
 var obj = {
   foo: function () {
     return function () {
@@ -42,7 +42,7 @@ keypath.get(obj, "foo()()()"); // val
 ```
 
 ```js
-var keypath = require('keypather')();
+var keypath = require('keypather');
 var obj = {
   foo: function () {
     return {
@@ -56,7 +56,7 @@ keypath.get(obj, "foo()['bar'].baz"); // val
 ```
 functions with arguments
 ```js
-var keypath = require('keypather')();
+var keypath = require('keypather');
 var obj = {
   create: function (data) {
     var data = data;
@@ -77,7 +77,7 @@ Get returns null for keypaths that do not exist by default,
 but can also throw errors with `{ force: false }`
 
 ```js
-var keypath = require('keypather')(); // equivalent to { force:true }
+var keypath = require('keypather'); // equivalent to { force:true }
 var obj = {};
 keypath.get(obj, "foo.bar.baz"); // null
 
@@ -93,7 +93,7 @@ keypath.get(obj, "foo.bar.baz");
 mixed notation, dot notation, and bracket notation all supported:
 
 ```js
-var keypath = require('keypather')();
+var keypath = require('keypather');
 var obj = {
   foo: {
       bar: {
@@ -110,7 +110,7 @@ keypath.set(obj, "['foo']['bar']['baz']", 'value'); // value
  Set forces creation by default:
 
 ```js
-var keypath = require('keypather')(); // equivalent to { force:true }
+var keypath = require('keypather'); // equivalent to { force:true }
 var obj = {};
 keypath.set(obj, "foo.bar.baz", 'val'); // value
 // obj = {
@@ -133,7 +133,7 @@ keypath.set(obj, "foo.bar.baz", 'val');
 Equivalent to `key in obj`
 
 ```js
-var keypath = require('keypather')();
+var keypath = require('keypather');
 var obj = {
   foo: {
       bar: {
@@ -159,7 +159,7 @@ keypath.in(obj, "['foo']['bar']['baz']"); // true
 Equivalent to `obj.hasOwnProperty`
 
 ```js
-var keypath = require('keypather')();
+var keypath = require('keypather');
 var obj = {
   foo: {
       bar: {
@@ -185,7 +185,7 @@ keypath.has(obj, "['foo']['bar']['baz']"); // true
 Equivalent to `delete obj.key`
 
 ```js
-var keypath = require('keypather')();
+var keypath = require('keypather');
 var obj = {
   foo: {
       bar: {
