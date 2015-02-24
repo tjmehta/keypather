@@ -2,7 +2,7 @@ module.exports = Keypather;
 
 function Keypather (opts) {
   if (!(this instanceof Keypather)) { return new Keypather(opts); }// Auto instantiate
-  this.force = (opts && opts.force && Boolean(opts.force) === false || true); // force - default: true
+  this.force = (opts && opts.force && Boolean(opts.force) === false ? false : true); // force - default: true
 }
 Keypather.prototype.get = function (/* obj, keypath, fnArgs... */) {
   this.create = false;
