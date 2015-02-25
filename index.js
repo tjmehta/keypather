@@ -1,8 +1,14 @@
-module.exports = Keypather;
+module.exports = factoryAndInstance;
+function factoryAndInstance (opts) {
+  var keypather = new Keypather(opts && opts.force);
+  return keypather;
+};
+Keypather.call(factoryAndInstance);
+factoryAndInstance.__proto__ = new Keypather().__proto__;
 
 function Keypather (opts) {
   if (!(this instanceof Keypather)) { return new Keypather(opts); }// Auto instantiate
-  this.force = (opts && opts.force && Boolean(opts.force) === false ? false : true); // force - default: true
+  this.force = (opts && typeof opts.force !== 'undefined' && Boolean(opts.force) === false ? false : true);
 }
 Keypather.prototype.get = function (/* obj, keypath, fnArgs... */) {
   this.create = false;

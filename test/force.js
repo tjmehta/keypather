@@ -44,10 +44,9 @@ function errorGetSet (keypath, value) {
       var tt, errs = [];
       try {
         tt = this.keypather.get(this.obj, keypath);
-        throw new Error("BLAH" + tt)
       }
       catch (err) {
-        console.error("ERR", tt)
+        console.error("ERR", err)
         errs.push(err);
       }
       console.error("AFTER-GET", tt)
