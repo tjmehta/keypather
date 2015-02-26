@@ -3,6 +3,8 @@
 Get or set a object values from a keypath string. Supports bracket notation, dot notation, and functions. 
 Ignores errors for deep-keypaths by default.
 
+Safely handles string expressions - *No* ```eval``` or ```new Function``` code here!
+
 # installation
 ```bash
 npm install keypather
