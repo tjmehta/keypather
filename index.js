@@ -5,10 +5,8 @@ function factoryAndInstance (opts) {
 };
 Keypather.call(factoryAndInstance);
 factoryAndInstance.__proto__ = new Keypather().__proto__;
-
-function Keypather (opts) {
-  if (!(this instanceof Keypather)) { return new Keypather(opts); }// Auto instantiate
-  this.force = (opts && typeof opts.force !== 'undefined' && Boolean(opts.force) === false ? false : true);
+function Keypather (force) {
+  this.force = (force !== undefined) ? Boolean(force) : true; // force - default: true
 }
 Keypather.prototype.get = function (/* obj, keypath, fnArgs... */) {
   this.create = false;
