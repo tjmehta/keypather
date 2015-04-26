@@ -1,3 +1,5 @@
+var exists = require('101/exists');
+
 var keypather = module.exports = function (opts) {
   var keypather = new Keypather(opts && opts.force);
   return keypather;
@@ -9,13 +11,6 @@ function Keypather (force) {
 Keypather.prototype.get = function (/* obj, keypath, fnArgs... */) {
   this.create = false;
   return this._get.apply(this, arguments);
-};
-Keypather.prototype._get = function (obj, keypath /*, fnArgs... */) {
-  this.obj = obj;
-  keypath = keypath + '';
-  this.keypathSplit = this.splitKeypath(keypath);
-  this.fnArgs = Array.prototype.slice.call(arguments, 2).map(makeArray);
-  return this.keypathSplit.reduce(this.getValue.bind(this), obj);
 };
 Keypather.prototype.set = function (obj, keypath, value  /*, fnArgs... */) {
   this.obj = obj;
@@ -87,8 +82,37 @@ Keypather.prototype.del = function (obj, keypath  /*, fnArgs... */) {
   delete val[lastKey];
   return true;
 };
+Keypather.prototype.flatten = function (obj, delimeter, preKeypath, init) {
+  var arr = Array.isArray(obj);
+  var self = this;
+  return Object.keys(obj).reduce(function (out, key) {
+    var val = obj[key];
+    if (arr) {
+      key = [ '[', key, ']' ].join('');
+    }
+    var keypath = exists(preKeypath) ?
+      [ preKeypath, key ].join(arr ? '' : delimeter) :
+      key;
+    if (typeof val === 'object') {
+      delimeter = exists(delimeter) ? delimeter : '.';
+      self.flatten(val, delimeter, keypath, out);
+    }
+    else {
+      out[keypath] = val;
+    }
+
+    return out;
+  }, init || {});
+};
 
 // internal
+Keypather.prototype._get = function (obj, keypath /*, fnArgs... */) {
+  this.obj = obj;
+  keypath = keypath + '';
+  this.keypathSplit = this.splitKeypath(keypath);
+  this.fnArgs = Array.prototype.slice.call(arguments, 2).map(makeArray);
+  return this.keypathSplit.reduce(this.getValue.bind(this), obj);
+};
 Keypather.prototype.splitKeypath = function (keypath) {
   var dotSplit = keypath.split('.');
   var split = [];

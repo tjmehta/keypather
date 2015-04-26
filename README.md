@@ -1,6 +1,6 @@
 # keypather [![Build Status](https://travis-ci.org/tjmehta/keypather.png?branch=master)](https://travis-ci.org/tjmehta/keypather)
 
-Get or set a object values from a keypath string. Supports bracket notation, dot notation, and functions. 
+Get or set a object values from a keypath string. Supports bracket notation, dot notation, and functions.
 Ignores errors for deep-keypaths by default.
 
 Safely handles string expressions - *No* ```eval``` or ```new Function``` code here!
@@ -206,6 +206,32 @@ keypath.del(obj, "['foo']['bar']['baz']"); // true
 //   }
 // }
 
+```
+
+## FLATTEN
+
+Flatten an object or array into a keypath object
+
+```js
+var keypath = require('keypather')();
+
+keypath.flatten({
+  foo: {
+    qux: 'hello'
+  },
+  bar: [
+    1,
+    {
+      yolo: [1]
+    }
+  ]
+});
+// returns:
+// {
+//   'foo.qux': 'hello',
+//   'bar[0]': 1,
+//   'bar[1].yolo[0]': 1
+// }
 ```
 
 # License
