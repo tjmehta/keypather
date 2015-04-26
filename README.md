@@ -234,5 +234,44 @@ keypath.flatten({
 // }
 ```
 
+## EXPAND
+
+Expand a flattened object back into an object or array
+
+```js
+var keypath = require('keypather')();
+
+keypath.expand({
+  'foo.qux': 'hello',
+  'bar[0]': 1,
+  'bar[1].yolo[0]': 1
+});
+// returns:
+// {
+//   foo: {
+//     qux: 'hello'
+//   },
+//   bar: [
+//     1,
+//     {
+//       yolo: [1]
+//     }
+//   ]
+// }
+
+// expand will assume the object is an array if all the keys are numbers
+
+keypath.expand({
+  '[0]': 1,
+  '[1].yolo[0]': 1
+});
+// returns:[
+//   1,
+//   {
+//     yolo: [1]
+//   }
+// ]
+```
+
 # License
 ### MIT

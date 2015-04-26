@@ -104,6 +104,28 @@ Keypather.prototype.flatten = function (obj, delimeter, preKeypath, init) {
     return out;
   }, init || {});
 };
+var arrKeypath = /^\[[0-9]+\]/;
+Keypather.prototype.expand = function (flatObj) {
+  var self = this;
+  var arrSoFar = true;
+  var out = Object.keys(flatObj).reduce(function (out, keypath) {
+    if (arrSoFar) {
+      arrSoFar = arrKeypath.test(keypath);
+      if (!arrSoFar) {
+        // change 'out' to an 'obj'
+        out = out.reduce(function (obj, key) {
+          obj[key] = out[key];
+          return out;
+        }, {});
+      }
+    }
+    var val = flatObj[keypath];
+    self.set(out, keypath, val);
+    return out;
+  }, []);
+
+  return out;
+};
 
 // internal
 Keypather.prototype._get = function (obj, keypath /*, fnArgs... */) {
