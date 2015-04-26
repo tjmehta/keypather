@@ -1,6 +1,6 @@
 {
   "name": "keypather",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "description": "Get or set a object values from a keypath string. Supports bracket notation, dot notation, and functions",
   "main": "index.js",
   "scripts": {
