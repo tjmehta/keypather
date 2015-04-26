@@ -92,5 +92,20 @@ describe('expand', function () {
         ]);
       });
     });
+    describe('delimeter', function() {
+      before(function () {
+        this.obj = {
+          'foo__qux': 'hello'
+        };
+      });
+      it('should expand the object', function(done) {
+        keypather.expand(this.obj, '__').should.eql({
+          foo: {
+            qux: 'hello'
+          }
+        });
+        done();
+      });
+    });
   });
 });

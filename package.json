@@ -37,9 +37,7 @@
     "url": "https://github.com/tjmehta/value-for-keypath/issues"
   },
   "homepage": "https://github.com/tjmehta/value-for-keypath",
-  "dependencies": {
-    "101": "^0.16.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "should": "~3.1.2",
     "mocha": "~1.17.1",
