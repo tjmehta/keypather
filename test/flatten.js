@@ -92,5 +92,22 @@ describe('flatten', function () {
         });
       });
     });
+    describe('delimeter', function() {
+      before(function () {
+        this.obj = {
+          foo: {
+            qux: 'hello',
+            bar: [1]
+          }
+        };
+      });
+      it('should expand the object', function(done) {
+        keypather.flatten(this.obj, '__').should.eql({
+          'foo__qux': 'hello',
+          'foo__bar[0]': 1
+        });
+        done();
+      });
+    });
   });
 });

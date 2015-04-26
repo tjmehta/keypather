@@ -1,5 +1,3 @@
-var exists = require('101/exists');
-
 var keypather = module.exports = function (opts) {
   var keypather = new Keypather(opts && opts.force);
   return keypather;
@@ -105,9 +103,12 @@ Keypather.prototype.flatten = function (obj, delimeter, preKeypath, init) {
   }, init || {});
 };
 var arrKeypath = /^\[[0-9]+\]/;
-Keypather.prototype.expand = function (flatObj) {
+Keypather.prototype.expand = function (flatObj, delimeter) {
   var self = this;
   var arrSoFar = true;
+  if (exists(delimeter)) {
+    var delimeterRegex = new RegExp(escapeRegExp(delimeter), 'g');
+  }
   var out = Object.keys(flatObj).reduce(function (out, keypath) {
     if (arrSoFar) {
       arrSoFar = arrKeypath.test(keypath);
@@ -120,6 +121,9 @@ Keypather.prototype.expand = function (flatObj) {
       }
     }
     var val = flatObj[keypath];
+    if (exists(delimeter)) {
+      keypath = keypath.replace(delimeterRegex, '.');
+    }
     self.set(out, keypath, val);
     return out;
   }, []);
@@ -371,4 +375,7 @@ function makeArray (val) {
 }
 function trim (str) {
   return str.trim();
+}
+function escapeRegExp(str) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }

@@ -232,6 +232,19 @@ keypath.flatten({
 //   'bar[0]': 1,
 //   'bar[1].yolo[0]': 1
 // }
+
+/* accepts a delimiter other than '.' as second arg */
+
+keypath.flatten({
+  foo: {
+    qux: 'hello'
+  }
+}, '__');
+// returns:
+// {
+//   'foo__qux': 'hello',
+// }
+
 ```
 
 ## EXPAND
@@ -259,7 +272,7 @@ keypath.expand({
 //   ]
 // }
 
-// expand will assume the object is an array if all the keys are numbers
+/* expand will assume the object is an array if all the keys are numbers */
 
 keypath.expand({
   '[0]': 1,
@@ -271,6 +284,18 @@ keypath.expand({
 //     yolo: [1]
 //   }
 // ]
+
+/* accepts a delimiter other than '.' as second arg */
+
+keypath.flatten({
+  foo: {
+    qux: 'hello'
+  }
+}, '__');
+// returns:
+// {
+//  'foo__qux': 'hello'
+// }
 ```
 
 # License
