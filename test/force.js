@@ -41,13 +41,16 @@ function errorGetSet (keypath, value) {
       this.keypather = keypather({ force: false });
     });
     it('should set the value', function () {
-      var errs = [];
+      var tt, errs = [];
       try {
-        this.keypather.get(this.obj, keypath);
+        tt = this.keypather.get(this.obj, keypath);
       }
       catch (err) {
+        console.error("ERR", err)
         errs.push(err);
       }
+      console.error("AFTER-GET", tt)
+      errs.length.should.equal(1);
       try {
         this.keypather.set(this.obj, keypath, value);
       }

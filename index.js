@@ -1,8 +1,10 @@
-var keypather = module.exports = function (opts) {
+module.exports = factoryAndInstance;
+function factoryAndInstance (opts) {
   var keypather = new Keypather(opts && opts.force);
   return keypather;
 };
-
+Keypather.call(factoryAndInstance);
+factoryAndInstance.__proto__ = new Keypather().__proto__;
 function Keypather (force) {
   this.force = (force !== undefined) ? Boolean(force) : true; // force - default: true
 }
