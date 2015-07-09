@@ -91,7 +91,7 @@ Keypather.prototype.flatten = function (obj, delimeter, preKeypath, init) {
     var keypath = exists(preKeypath) ?
       [ preKeypath, key ].join(arr ? '' : delimeter) :
       key;
-    if (typeof val === 'object') {
+    if (val && typeof val === 'object') {
       delimeter = exists(delimeter) ? delimeter : '.';
       self.flatten(val, delimeter, keypath, out);
     }
