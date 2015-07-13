@@ -1,7 +1,11 @@
-var keypather = module.exports = function (opts) {
-  var keypather = new Keypather(opts && opts.force);
-  return keypather;
+var keypather = function (opts) {
+    var keypather = new Keypather(opts && opts.force);
+    return keypather;
 };
+if(typeof module !== 'undefined')
+{
+    module.exports = keypather;
+}
 
 function Keypather (force) {
   this.force = (force !== undefined) ? Boolean(force) : true; // force - default: true
