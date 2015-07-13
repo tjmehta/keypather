@@ -68,6 +68,7 @@ describe('flatten', function () {
       });
       it('should get the value', function () {
         keypather.flatten(this.obj).should.eql({
+          'num': new Number(1),
           'wiz': null,
           'foo.qux': 10,
           'bar[0]': 1,
