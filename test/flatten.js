@@ -50,6 +50,32 @@ describe('flatten', function () {
         });
       });
     });
+    describe('null', function () {
+      before(function () {
+        this.obj = {
+          num: new Number(1), // ignore
+          wiz: null,
+          foo: {
+            qux: 10
+          },
+          bar: [
+            1,
+            {
+              yolo: [1]
+            }
+          ]
+        };
+      });
+      it('should get the value', function () {
+        keypather.flatten(this.obj).should.eql({
+          'num': new Number(1),
+          'wiz': null,
+          'foo.qux': 10,
+          'bar[0]': 1,
+          'bar[1].yolo[0]': 1
+        });
+      });
+    });
   });
   describe("keypather.flatten(arr)", function () {
     describe('simple', function() {

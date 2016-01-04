@@ -1,7 +1,10 @@
-var keypather = function (opts) {
-    var keypather = new Keypather(opts && opts.force);
-    return keypather;
+var isObject = require('101/is-object');
+
+var keypather = module.exports = function (opts) {
+  var keypather = new Keypather(opts && opts.force);
+  return keypather;
 };
+
 if(typeof module !== 'undefined')
 {
     module.exports = keypather;
@@ -86,6 +89,7 @@ Keypather.prototype.del = function (obj, keypath  /*, fnArgs... */) {
 };
 Keypather.prototype.flatten = function (obj, delimeter, preKeypath, init) {
   var arr = Array.isArray(obj);
+  var def = arr ? [] : {};
   var self = this;
   return Object.keys(obj).reduce(function (out, key) {
     var val = obj[key];
@@ -95,7 +99,7 @@ Keypather.prototype.flatten = function (obj, delimeter, preKeypath, init) {
     var keypath = exists(preKeypath) ?
       [ preKeypath, key ].join(arr ? '' : delimeter) :
       key;
-    if (typeof val === 'object') {
+    if(Array.isArray(val) || isObject(val)) {
       delimeter = exists(delimeter) ? delimeter : '.';
       self.flatten(val, delimeter, keypath, out);
     }
@@ -104,7 +108,7 @@ Keypather.prototype.flatten = function (obj, delimeter, preKeypath, init) {
     }
 
     return out;
-  }, init || {});
+  }, init || def);
 };
 var arrKeypath = /^\[[0-9]+\]/;
 Keypather.prototype.expand = function (flatObj, delimeter) {
