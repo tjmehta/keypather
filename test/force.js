@@ -17,7 +17,7 @@ describe('force', function () {
     this.keypather = keypather({ force: true });
     this.obj = {};
     this.keypather.set('foo.bar', 'value');
-    exists(this.keypather.get(this.obj, 'foo.qux')).should.equal(false);
+    (this.keypather.get(this.obj, 'foo.qux') === undefined).should.equal(true);
   });
 });
 
@@ -28,7 +28,7 @@ function forceGetSetGet (keypath, value) {
       this.keypather = keypather({ force: true });
     });
     it('should set the value', function () {
-      exists(this.keypather.get(this.obj, keypath)).should.equal(false);
+      (this.keypather.get(this.obj, keypath) === undefined).should.equal(true);
       this.keypather.set(this.obj, keypath, value);
       this.keypather.get(this.obj, keypath).should.eql(value);
     });
@@ -57,8 +57,4 @@ function errorGetSet (keypath, value) {
       errs.length.should.equal(2);
     });
   };
-}
-
-function exists (val) {
-  return val !== null && val !== undefined;
 }
