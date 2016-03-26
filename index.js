@@ -1,4 +1,6 @@
+var exists = require('101/exists')
 var isObject = require('101/is-object');
+var last = require('101/last')
 
 var keypather = module.exports = function (opts) {
   var keypather = new Keypather(opts && opts.force);
@@ -229,7 +231,7 @@ Keypather.prototype.handleKey = function (val, key) {
     return this.createPath(val, key);
   }
   return (this.force && !exists(val)) ?
-      null : val[key];
+      undefined : val[key];
 };
 Keypather.prototype.handleFunction = function (val, keyPart) {
   var subKey = keyPart.slice(0, this.indexOpenParen), ctx;
@@ -239,14 +241,14 @@ Keypather.prototype.handleFunction = function (val, keyPart) {
       throw new Error('KeypathSetError: cannot force create a path where a function does not exist');
     }
     ctx = val;
-    val = (this.force && (!exists(val) || !exists(val[subKey]))) ? null :
+    val = (this.force && (!exists(val) || !exists(val[subKey]))) ? undefined :
       (this.indexOpenParen+1 === this.indexCloseParen) ?
         val[subKey].call(ctx) :
         val[subKey].apply(ctx, this.parseFunctionArgs(argsStr));
   }
   else {
     ctx = this.lastVal || global;
-    val = (this.force && !exists(val)) ? null :
+    val = (this.force && !exists(val)) ? undefined :
       (this.indexOpenParen+1 === this.indexCloseParen) ? // maintain context (this.lastVal)
         val.call(ctx) :
         val.apply(ctx, this.parseFunctionArgs(argsStr));
@@ -274,14 +276,14 @@ Keypather.prototype.handleBrackets = function (val, keyPart) {
         }
       }
       val = (this.force && (!exists(val) || !exists(val[subKey]))) ?
-        null : val[subKey][bracketKey];
+        undefined : val[subKey][bracketKey];
     }
     else {
       if (this.create && !exists(val[bracketKey])) {
         return this.createPath(val, bracketKey);
       }
       val = (this.force && !exists(val)) ?
-        null : val[bracketKey];
+        undefined : val[bracketKey];
     }
     keyPart = keyPart.slice(this.indexCloseBracket+1); // update key, slice off bracket notation
     return keyPart ? // if keypart left, back to back fn or brackets so recurse
@@ -372,12 +374,6 @@ function parseBracketKey (key) {
   }
 }
 
-function exists (val) {
-  return val !== null && val !== undefined;
-}
-function last (arrOrStr) {
-  return arrOrStr[arrOrStr.length - 1];
-}
 function makeArray (val) {
   return Array.isArray(val) ? val : [val];
 }
