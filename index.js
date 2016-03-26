@@ -1,4 +1,6 @@
+var exists = require('101/exists')
 var isObject = require('101/is-object');
+var last = require('101/last')
 
 var keypather = module.exports = function (opts) {
   var keypather = new Keypather(opts && opts.force);
@@ -372,12 +374,6 @@ function parseBracketKey (key) {
   }
 }
 
-function exists (val) {
-  return val !== null && val !== undefined;
-}
-function last (arrOrStr) {
-  return arrOrStr[arrOrStr.length - 1];
-}
 function makeArray (val) {
   return Array.isArray(val) ? val : [val];
 }
