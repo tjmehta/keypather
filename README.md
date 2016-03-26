@@ -75,13 +75,13 @@ keypath.get(obj, "create(%).get(%)", {foo:1, bar:2}, 'foo'); // 1, single args a
 // between the parens of functions that accept args (in place of %)
 ```
 
-Get returns null for keypaths that do not exist by default,
+Get returns `undefined` for keypaths that do not exist by default,
 but can also throw errors with `{ force: false }`
 
 ```js
 var keypath = require('keypather')(); // equivalent to { force:true }
 var obj = {};
-keypath.get(obj, "foo.bar.baz"); // null
+keypath.get(obj, "foo.bar.baz"); // undefined
 
 var keypath = require('keypather')({ force: false });
 var obj = {};
@@ -297,6 +297,9 @@ keypath.flatten({
 //  'foo__qux': 'hello'
 // }
 ```
+
+# Changelog
+[Changelog history](https://github.com/tjmehta/keypather/blob/master/CHANGELOG.md)
 
 # License
 ### MIT
