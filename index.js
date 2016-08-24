@@ -93,7 +93,11 @@ Keypather.prototype.flatten = function (obj, delimeter, preKeypath, init) {
   var arr = Array.isArray(obj);
   var def = arr ? [] : {};
   var self = this;
-  return Object.keys(obj).reduce(function (out, key) {
+  var keys = Object.keys(obj)
+  if (init && preKeypath && !arr && keys.length === 0) {
+    init[preKeypath] = {}
+  }
+  return keys.reduce(function (out, key) {
     var val = obj[key];
     if (arr) {
       key = [ '[', key, ']' ].join('');

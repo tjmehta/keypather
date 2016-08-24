@@ -33,7 +33,8 @@ describe('expand', function () {
         this.obj = {
           'foo.qux': 10,
           'bar[0]': 1,
-          'bar[1].yolo[0]': 1
+          'bar[1].yolo[0]': 1,
+          'yolo': {}
         };
       });
       it('should get the value', function () {
@@ -46,7 +47,8 @@ describe('expand', function () {
             {
               yolo: [1]
             }
-          ]
+          ],
+          'yolo': {}
         });
       });
     });

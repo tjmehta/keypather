@@ -39,14 +39,16 @@ describe('flatten', function () {
             {
               yolo: [1]
             }
-          ]
+          ],
+          yolo: {}
         };
       });
       it('should get the value', function () {
         keypather.flatten(this.obj).should.eql({
           'foo.qux': 10,
           'bar[0]': 1,
-          'bar[1].yolo[0]': 1
+          'bar[1].yolo[0]': 1,
+          'yolo': {}
         });
       });
     });
