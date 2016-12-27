@@ -12,6 +12,22 @@ npm install keypather
 
 # Examples
 
+## Initialization
+
+With require:
+
+```js
+var keypath = require('keypather')(options);
+```
+
+With ES6 import:
+
+```js
+import { default as Keypather } from 'keypather';
+
+let keypather = new Keypather(options);
+```
+
 ## GET
 
 dot notation, bracket notation, and functions (even with arguments) all supported:
