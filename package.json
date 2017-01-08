@@ -41,8 +41,8 @@
     "101": "^1.5.0"
   },
   "devDependencies": {
-    "should": "~3.1.2",
-    "mocha": "~1.17.1",
-    "nodemon": "~1.0.20"
+    "should": "~11.1.2",
+    "mocha": "~3.2.0",
+    "nodemon": "~1.11.0"
   }
 }
