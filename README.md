@@ -23,7 +23,7 @@ var keypath = require('keypather')(options);
 With ES6 import:
 
 ```js
-import { default as Keypather } from 'keypather';
+import Keypather from 'keypather';
 
 let keypather = new Keypather(options);
 ```
