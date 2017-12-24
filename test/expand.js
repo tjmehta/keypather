@@ -38,7 +38,10 @@ describe('expand', function () {
         };
       });
       it('should get the value', function () {
-        keypather.expand(this.obj).should.eql({
+        const expanded = keypather.expand(this.obj);
+
+        expanded.bar.should.be.a.Array();
+        expanded.should.be.exactly({
           foo: {
             qux: 10
           },
@@ -66,6 +69,20 @@ describe('expand', function () {
           'foo',
           'bar'
         ]);
+      });
+    });
+    describe('in object', function() {
+      before(function () {
+        this.obj = {
+          'values[0]': 'foo',
+          'values[1]': 'bar'
+        };
+      });
+      it('should get the value', function () {
+        const expanded = keypather.expand(this.obj);
+
+        expanded.values.should.be.a.Array();
+        expanded.values.should.eql(['foo', 'bar']);
       });
     });
     describe('mixed', function() {
