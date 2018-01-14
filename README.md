@@ -12,20 +12,32 @@ npm install keypather
 
 # Examples
 
-## Initialization
+# Usage
+
+## Import
 
 With require:
 
 ```js
-var keypath = require('keypather')(options);
+var getKeypath = require('keypather/get')
+var setKeypath = require('keypather/set')
+var delKeypath = require('keypather/del')
+var keypathIn = require('keypather/in')
+var hasKeypath = require('keypather/has')
+var expand = require('keypather/expand')
+var flatten = require('keypather/flatten')
 ```
 
 With ES6 import:
 
 ```js
-import Keypather from 'keypather';
-
-let keypather = new Keypather(options);
+import getKeypath from 'keypather/get'
+import setKeypath from 'keypather/set'
+import delKeypath from 'keypather/del'
+import keypathIn from 'keypather/in'
+import hasKeypath from 'keypather/has'
+import expand from 'keypather/expand'
+import flatten from 'keypather/flatten'
 ```
 
 ## GET
