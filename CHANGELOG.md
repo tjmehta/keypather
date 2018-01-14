@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.0.0 - rewrote keypather as a string parser!
+- breaking!: dropped support for functions
+- breaking!: expand doesn't support custom delimeters larger than 1 character
+- breaking!: export keypather's modules separately
+- feature: bundling keypather into web apps should be much smaller
+- feature: should be much more performant
+- patch: expand was not creating nested arrays properly [see tests](https://github.com/tjmehta/keypather/pull/26/files)
+- patch: this should fix various inconsistencies with parsing old
+
 ## 2.0.1
 - patch: bug-fix flatten removes empty nested objects
 
