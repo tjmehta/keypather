@@ -1,11 +1,11 @@
 # keypather [![Build Status](https://travis-ci.org/tjmehta/keypather.png?branch=master)](https://travis-ci.org/tjmehta/keypather)
 
-Get or set a object values from a keypath string. Supports bracket notation, dot notation, and functions.
-Ignores errors for deep-keypaths by default.
+Get or set a object values from a keypath string. Supports bracket notation, dot notation, and mixed notation.
+Ignores errors for deep keypaths by default.
 
 Safely handles string expressions - *No* ```eval``` or ```new Function``` code here!
 
-# installation
+# Installation
 ```bash
 npm install keypather
 ```
@@ -30,10 +30,10 @@ let keypather = new Keypather(options);
 
 ## GET
 
-dot notation, bracket notation, and functions (even with arguments) all supported:
+dot notation, bracket notation, and mixed notation all supported:
 
 ```js
-var keypath = require('keypather')();
+var getKeypath = require('keypather/get');
 var obj = {
   foo: {
     bar: {
@@ -41,12 +41,12 @@ var obj = {
     }
   }
 };
-keypath.get(obj, "foo.bar.baz"); // val
-keypath.get(obj, "['foo']['bar']['baz']"); // val
+getKeypath(obj, "foo.bar.baz"); // val
+getKeypath(obj, "['foo']['bar']['baz']"); // val
 ```
 
 ```js
-var keypath = require('keypather')();
+var getKeypath = require('keypather/get');
 var obj = {
   foo: function () {
     return function () {
@@ -56,11 +56,11 @@ var obj = {
     };
   }
 };
-keypath.get(obj, "foo()()()"); // val
+getKeypath(obj, "foo()()()"); // val
 ```
 
 ```js
-var keypath = require('keypather')();
+var getKeypath = require('keypather/get');
 var obj = {
   foo: function () {
     return {
@@ -70,48 +70,32 @@ var obj = {
     };
   }
 };
-keypath.get(obj, "foo()['bar'].baz"); // val
-```
-functions with arguments
-```js
-var keypath = require('keypather')();
-var obj = {
-  create: function (data) {
-    var data = data;
-    return {
-      get: function (key) {
-        return data[key];
-      }
-    };
-  }
-};
-keypath.get(obj, "create(%).get(%)", [{foo:1, bar:2}], ['foo']); // 1
-keypath.get(obj, "create(%).get(%)", {foo:1, bar:2}, 'foo'); // 1, single args are automatically placed in arrays
-// technically you can use anything (except dots, parens, brackets, or empty string)
-// between the parens of functions that accept args (in place of %)
+getKeypath(obj, "foo()['bar'].baz"); // val
 ```
 
 Get returns `undefined` for keypaths that do not exist by default,
 but can also throw errors with `{ force: false }`
 
 ```js
-var keypath = require('keypather')(); // equivalent to { force:true }
-var obj = {};
-keypath.get(obj, "foo.bar.baz"); // undefined
+var getKeypath = require('keypather/get');
+var obj = {}
 
-var keypath = require('keypather')({ force: false });
-var obj = {};
-keypath.get(obj, "foo.bar.baz");
+// opts defaults to { force:true }
+getKeypath(obj, "foo.bar.baz");
+// returns undefined
+
+// use force: false to throw errors for non-existant paths
+getKeypath(obj, "foo.bar.baz", { force: false });
 // throw's an error
-// Error: Cannot get 'foo' of undefined
+// Error: Cannot read property 'bar' of undefined (for keypath 'foo.bar.qux')
 ```
 
 ## SET
 
-mixed notation, dot notation, and bracket notation all supported:
+dot notation, bracket notation, and mixed notation all supported:
 
 ```js
-var keypath = require('keypather')();
+var setKeypath = require('keypather/set');
 var obj = {
   foo: {
       bar: {
@@ -120,18 +104,20 @@ var obj = {
     }
   }
 };
-keypath.set(obj, "foo['bar'].baz", 'value'); // value
-keypath.set(obj, "foo.bar.baz", 'value'); // value
-keypath.set(obj, "['foo']['bar']['baz']", 'value'); // value
+setKeypath(obj, "foo['bar'].baz", 'value'); // value
+setKeypath(obj, "foo.bar.baz", 'value'); // value
+setKeypath(obj, "['foo']['bar']['baz']", 'value'); // value
 ```
 
- Set forces creation by default:
+Set forces creation by default:
 
 ```js
 var keypath = require('keypather')(); // equivalent to { force:true }
-var obj = {};
-keypath.set(obj, "foo.bar.baz", 'val'); // value
-// obj = {
+
+setKeypath({}, "foo.bar.baz", 'val');
+// returns 'val'
+// object becomes:
+// {
 //   foo: {
 //     bar: {
 //       baz: 'val'
@@ -139,11 +125,9 @@ keypath.set(obj, "foo.bar.baz", 'val'); // value
 //   }
 // };
 
-var keypath = require('keypather')({ force: false });
-var obj = {};
-keypath.set(obj, "foo.bar.baz", 'val');
+setKeypath({}, "foo.bar.baz", 'val', { force: false });
 // throw's an error
-// Error: Cannot get 'foo' of undefined
+// Error: Cannot read property 'bar' of undefined (for keypath 'foo.bar.qux')
 ```
 
 ## IN
@@ -151,7 +135,7 @@ keypath.set(obj, "foo.bar.baz", 'val');
 Equivalent to `key in obj`
 
 ```js
-var keypath = require('keypather')();
+var keypathIn = require('keypather/in');
 var obj = {
   foo: {
       bar: {
@@ -160,16 +144,9 @@ var obj = {
     }
   }
 };
-keypath.in(obj, "foo['bar'].baz");        // true
-keypath.in(obj, "foo.bar.baz");           // true
-keypath.in(obj, "['foo']['bar']['baz']"); // true
-// obj:
-// {
-//   foo: {
-//     bar: {}
-//   }
-// }
-
+keypathIn(obj, "foo['bar'].baz");        // true
+keypathIn(obj, "foo.bar.baz");           // true
+keypathIn(obj, "['foo']['bar']['baz']"); // true
 ```
 
 ## HAS
@@ -177,7 +154,7 @@ keypath.in(obj, "['foo']['bar']['baz']"); // true
 Equivalent to `obj.hasOwnProperty`
 
 ```js
-var keypath = require('keypather')();
+var hasKeypath = require('keypather/has');
 var obj = {
   foo: {
       bar: {
@@ -186,16 +163,9 @@ var obj = {
     }
   }
 };
-keypath.has(obj, "foo['bar'].baz");        // true
-keypath.has(obj, "foo.bar.baz");           // true
-keypath.has(obj, "['foo']['bar']['baz']"); // true
-// obj:
-// {
-//   foo: {
-//     bar: {}
-//   }
-// }
-
+hasKeypath(obj, "foo['bar'].baz");        // true
+hasKeypath(obj, "foo.bar.baz");           // true
+hasKeypath(obj, "['foo']['bar']['baz']"); // true
 ```
 
 ## DEL
@@ -203,7 +173,7 @@ keypath.has(obj, "['foo']['bar']['baz']"); // true
 Equivalent to `delete obj.key`
 
 ```js
-var keypath = require('keypather')();
+var delKeypath = require('keypather/del');
 var obj = {
   foo: {
       bar: {
@@ -212,10 +182,10 @@ var obj = {
     }
   }
 };
-keypath.del(obj, "foo['bar'].baz");        // true
-keypath.del(obj, "foo.bar.baz");           // true
-keypath.del(obj, "['foo']['bar']['baz']"); // true
-// obj:
+delKeypath(obj, "foo['bar'].baz");        // true
+delKeypath(obj, "foo.bar.baz");           // true
+delKeypath(obj, "['foo']['bar']['baz']"); // true
+// obj becomes:
 // {
 //   foo: {
 //     bar: {}
@@ -229,9 +199,9 @@ keypath.del(obj, "['foo']['bar']['baz']"); // true
 Flatten an object or array into a keypath object
 
 ```js
-var keypath = require('keypather')();
+var flatten = require('keypather/flatten')();
 
-keypath.flatten({
+flatten({
   foo: {
     qux: 'hello'
   },
@@ -251,14 +221,14 @@ keypath.flatten({
 
 /* accepts a delimiter other than '.' as second arg */
 
-keypath.flatten({
+flatten({
   foo: {
     qux: 'hello'
   }
-}, '__');
+}, '_');
 // returns:
 // {
-//   'foo__qux': 'hello',
+//   'foo_qux': 'hello',
 // }
 
 ```
@@ -268,9 +238,9 @@ keypath.flatten({
 Expand a flattened object back into an object or array
 
 ```js
-var keypath = require('keypather')();
+var expand = require('keypather/expand');
 
-keypath.expand({
+expand({
   'foo.qux': 'hello',
   'bar[0]': 1,
   'bar[1].yolo[0]': 1
@@ -288,13 +258,14 @@ keypath.expand({
 //   ]
 // }
 
-/* expand will assume the object is an array if all the keys are numbers */
+/* expand will assume an object is an array if any of the keys are numbers */
 
-keypath.expand({
+expand({
   '[0]': 1,
   '[1].yolo[0]': 1
 });
-// returns:[
+// returns:
+// [
 //   1,
 //   {
 //     yolo: [1]
@@ -303,14 +274,14 @@ keypath.expand({
 
 /* accepts a delimiter other than '.' as second arg */
 
-keypath.flatten({
-  foo: {
-    qux: 'hello'
-  }
-}, '__');
+expand({
+ 'foo_qux': 'hello'
+}, '_');
 // returns:
 // {
-//  'foo__qux': 'hello'
+//   foo: {
+//     qux: 'hello'
+//   }
 // }
 ```
 
