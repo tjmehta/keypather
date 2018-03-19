@@ -1,11 +1,11 @@
 {
   "name": "keypather",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Get or set a object values from a keypath string. Supports bracket notation, dot notation, and functions",
   "main": "index.js",
   "scripts": {
-    "test-watch": "nodemon --delay 1 -w *.js -w lib -w test -w configs -x npm test",
-    "test": "mocha"
+    "test-watch": "jest --coverage --watch",
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -38,11 +38,15 @@
   },
   "homepage": "https://github.com/tjmehta/value-for-keypath",
   "dependencies": {
-    "101": "^1.5.0"
+    "101": "^1.6.2",
+    "debug": "^3.1.0",
+    "escape-string-regexp": "^1.0.5",
+    "jest": "^21.2.1",
+    "resolve": "^1.5.0",
+    "string-reduce": "^1.0.0"
   },
   "devDependencies": {
-    "should": "~11.1.2",
-    "mocha": "~3.2.0",
-    "nodemon": "~1.11.0"
+    "jest": "^20.0.4",
+    "standard": "^10.0.3"
   }
 }
