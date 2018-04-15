@@ -1,3 +1,4 @@
+/* eslint-env jest */
 var expand = require('../expand')
 var testCases = require('./fixtures/flatten-expand-test-cases.js').common
 

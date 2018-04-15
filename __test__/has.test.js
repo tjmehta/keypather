@@ -1,3 +1,4 @@
+/* eslint-env jest */
 var keypathHas = require('../has')
 
 function testFunction (fn, args, expectedVal, only) {
@@ -36,7 +37,7 @@ describe('keypathHas', function () {
         testFunction(keypathHas, [{ foo: { bar: { qux: val } } }, "['foo']['bar']['qux']"], true)
         testFunction(keypathHas, [{ foo: { 'dot.key': { qux: val } } }, "['foo']['dot.key']['qux']"], true)
         testFunction(keypathHas, [{ foo: { '[bracket.key]': { qux: val } } }, "['foo']['[bracket.key]']['qux']"], true)
-        testFunction(keypathHas, [{ foo: { '\'quote.key\'': { qux: val } } }, "['foo']['\'quote.key\'']['qux']"], true)
+        testFunction(keypathHas, [{ foo: { '\'quote.key\'': { qux: val } } }, "['foo'][''quote.key'']['qux']"], true)
         testFunction(keypathHas, [{ '[""]': val }, '["[""]"]'], true) // complex edgecase!
 
         describe('escaped', function () {
@@ -55,14 +56,19 @@ describe('keypathHas', function () {
         testFunction(keypathHas, [{ foo: { bar: { qux: val } } }, '["foo"]["bar"]["qux"]'], true)
         testFunction(keypathHas, [{ foo: { 'dot.key': { qux: val } } }, '["foo"]["dot.key"]["qux"]'], true)
         testFunction(keypathHas, [{ foo: { '[bracket.key]': { qux: val } } }, '["foo"]["[bracket.key]"]["qux"]'], true)
-        testFunction(keypathHas, [{ foo: { '\"quote.key\"': { qux: val } } }, '["foo"]["\"quote.key\""]["qux"]'], true)
+        testFunction(keypathHas, [{ foo: { '"quote.key"': { qux: val } } }, '["foo"][""quote.key""]["qux"]'], true)
 
         describe('escaped', function () {
+          // eslint-disable-next-line quotes
           testFunction(keypathHas, [{ foo: val }, "[\"foo\"]"], true)
+          // eslint-disable-next-line quotes
           testFunction(keypathHas, [{ foo: { bar: val } }, "[\"foo\"][\"bar\"]"], true)
+          // eslint-disable-next-line quotes
           testFunction(keypathHas, [{ foo: { bar: { qux: val } } }, "[\"foo\"][\"bar\"][\"qux\"]"], true)
+          // eslint-disable-next-line quotes
           testFunction(keypathHas, [{ foo: { '[bracket.key]': { qux: val } } }, "[\"foo\"][\"[bracket.key]\"][\"qux\"]"], true)
-          testFunction(keypathHas, [{ foo: { '\"quote.key\"': { qux: val } } }, "[\"foo\"][\"\"quote.key\"\"][\"qux\"]"], true)
+          // eslint-disable-next-line quotes
+          testFunction(keypathHas, [{ foo: { '"quote.key"': { qux: val } } }, "[\"foo\"][\"\"quote.key\"\"][\"qux\"]"], true)
         })
       })
     })
