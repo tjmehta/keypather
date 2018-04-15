@@ -1,3 +1,4 @@
+/* eslint-env jest */
 var get = require('../get')
 
 function testFunction (fn, args, expectedVal, only) {
@@ -32,20 +33,20 @@ describe('get', function () {
 
     describe('bracket notation', function () {
       describe('no quote', function () {
-        testFunction(get, [[val], "[0]"], val)
-        testFunction(get, [[1,2,3,4,5,6,7,8,9,0,val], "[10]"], val)
-        testFunction(get, [[[val]], "[0][0]"], val)
-        testFunction(get, [[[[val]]], "[0][0][0]"], val)
+        testFunction(get, [[val], '[0]'], val)
+        testFunction(get, [[1, 2, 3, 4, 5, 6, 7, 8, 9, 0, val], '[10]'], val)
+        testFunction(get, [[[val]], '[0][0]'], val)
+        testFunction(get, [[[[val]]], '[0][0][0]'], val)
       })
       describe('single quote', function () {
-        testFunction(get, [[[val]], "[0][0]"], val)
-        testFunction(get, [[[val]], "[0][0]"], val)
+        testFunction(get, [[[val]], '[0][0]'], val)
+        testFunction(get, [[[val]], '[0][0]'], val)
         testFunction(get, [{ foo: val }, "['foo']"], val)
         testFunction(get, [{ foo: { bar: val } }, "['foo']['bar']"], val)
         testFunction(get, [{ foo: { bar: { qux: val } } }, "['foo']['bar']['qux']"], val)
         testFunction(get, [{ foo: { 'dot.key': { qux: val } } }, "['foo']['dot.key']['qux']"], val)
         testFunction(get, [{ foo: { '[bracket.key]': { qux: val } } }, "['foo']['[bracket.key]']['qux']"], val)
-        testFunction(get, [{ foo: { '\'quote.key\'': { qux: val } } }, "['foo']['\'quote.key\'']['qux']"], val)
+        testFunction(get, [{ foo: { '\'quote.key\'': { qux: val } } }, "['foo'][''quote.key'']['qux']"], val)
         testFunction(get, [{ '[""]': val }, '["[""]"]'], val) // complex edgecase!
 
         describe('escaped', function () {
@@ -64,13 +65,18 @@ describe('get', function () {
         testFunction(get, [{ foo: { bar: { qux: val } } }, '["foo"]["bar"]["qux"]'], val)
         testFunction(get, [{ foo: { 'dot.key': { qux: val } } }, '["foo"]["dot.key"]["qux"]'], val)
         testFunction(get, [{ foo: { '[bracket.key]': { qux: val } } }, '["foo"]["[bracket.key]"]["qux"]'], val)
-        testFunction(get, [{ foo: { '\"quote.key\"': { qux: val } } }, '["foo"]["\"quote.key\""]["qux"]'], val)
+        testFunction(get, [{ foo: { '"quote.key"': { qux: val } } }, '["foo"][""quote.key""]["qux"]'], val)
 
         describe('escaped', function () {
+          // eslint-disable-next-line
           testFunction(get, [{ foo: val }, "[\"foo\"]"], val)
+          // eslint-disable-next-line
           testFunction(get, [{ foo: { bar: val } }, "[\"foo\"][\"bar\"]"], val)
+          // eslint-disable-next-line
           testFunction(get, [{ foo: { bar: { qux: val } } }, "[\"foo\"][\"bar\"][\"qux\"]"], val)
+          // eslint-disable-next-line
           testFunction(get, [{ foo: { '[bracket.key]': { qux: val } } }, "[\"foo\"][\"[bracket.key]\"][\"qux\"]"], val)
+          // eslint-disable-next-line
           testFunction(get, [{ foo: { '\"quote.key\"': { qux: val } } }, "[\"foo\"][\"\"quote.key\"\"][\"qux\"]"], val)
         })
       })
@@ -129,7 +135,7 @@ describe('get', function () {
       testFunction(get, [{ }, '[yo]'], /char 2.*y.*invalid bracket key/)
       testFunction(get, [{ }, '[0]foo'], /char 4.*f.*invalid bracket key/)
       testFunction(get, [{ }, 'foo.[0]'], /char 5.*\[.*invalid dot key/)
-      testFunction(get, [{ }, 'f-'], /char 2.*\-.*invalid dot key/)
+      testFunction(get, [{ }, 'f-'], /char 2.*-.*invalid dot key/)
       testFunction(get, [{ }, '.bar'], /char 1.*\..*invalid dot key/)
       testFunction(get, [{ }, 'foo..bar'], /char 5.*\..*invalid dot key/)
       testFunction(get, [{ }, '["0"]foo'], /char 9.*END.*invalid bracket string key/) // edge case due to js lack of ability to read escapes

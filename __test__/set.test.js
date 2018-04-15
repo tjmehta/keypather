@@ -1,3 +1,4 @@
+/* eslint-env jest */
 var debug = require('debug')('keypather:set.test')
 var set = require('../set')
 
@@ -20,7 +21,7 @@ function testFunction (fn, args, expected, only) {
         result: result,
         expectedResult: expectedResult,
         object: args[0],
-        expectedObject: expected,
+        expectedObject: expected
       })
       expect(val).toEqual({}) // safety check, since val is static
       expect(result).toBe(expectedResult)
@@ -48,7 +49,7 @@ describe('set', function () {
         testFunction(set, [{ foo: { bar: { qux: old } } }, "['foo']['bar']['qux']", val], { foo: { bar: { qux: val } } })
         testFunction(set, [{ foo: { 'dot.key': { qux: old } } }, "['foo']['dot.key']['qux']", val], { foo: { 'dot.key': { qux: val } } })
         testFunction(set, [{ foo: { '[bracket.key]': { qux: old } } }, "['foo']['[bracket.key]']['qux']", val], { foo: { '[bracket.key]': { qux: val } } })
-        testFunction(set, [{ foo: { '\'quote.key\'': { qux: old } } }, "['foo']['\'quote.key\'']['qux']", val], { foo: { '\'quote.key\'': { qux: val } } })
+        testFunction(set, [{ foo: { '\'quote.key\'': { qux: old } } }, "['foo'][''quote.key'']['qux']", val], { foo: { '\'quote.key\'': { qux: val } } })
 
         describe('escaped', function () {
           testFunction(set, [{ foo: old }, '[\'foo\']', val], { foo: val })
@@ -66,16 +67,29 @@ describe('set', function () {
         testFunction(set, [{ foo: { bar: { qux: old } } }, '["foo"]["bar"]["qux"]', val], { foo: { bar: { qux: val } } })
         testFunction(set, [{ foo: { 'dot.key': { qux: old } } }, '["foo"]["dot.key"]["qux"]', val], { foo: { 'dot.key': { qux: val } } })
         testFunction(set, [{ foo: { '[bracket.key]': { qux: old } } }, '["foo"]["[bracket.key]"]["qux"]', val], { foo: { '[bracket.key]': { qux: val } } })
-        testFunction(set, [{ foo: { '\"quote.key\"': { qux: old } } }, '["foo"]["\"quote.key\""]["qux"]', val], { foo: { '\"quote.key\"': { qux: val } } })
+        testFunction(set, [{ foo: { '"quote.key"': { qux: old } } }, '["foo"][""quote.key""]["qux"]', val], { foo: { '"quote.key"': { qux: val } } })
 
         describe('escaped', function () {
+          // eslint-disable-next-line quotes
           testFunction(set, [{ foo: old }, "[\"foo\"]", val], { foo: val })
+          // eslint-disable-next-line quotes
           testFunction(set, [{ foo: { bar: old } }, "[\"foo\"][\"bar\"]", val], { foo: { bar: val } })
+          // eslint-disable-next-line quotes
           testFunction(set, [{ foo: { bar: { qux: old } } }, "[\"foo\"][\"bar\"][\"qux\"]", val], { foo: { bar: { qux: val } } })
+          // eslint-disable-next-line quotes
           testFunction(set, [{ foo: { '[bracket.key]': { qux: old } } }, "[\"foo\"][\"[bracket.key]\"][\"qux\"]", val], { foo: { '[bracket.key]': { qux: val } } })
-          testFunction(set, [{ foo: { '\"quote.key\"': { qux: old } } }, "[\"foo\"][\"\"quote.key\"\"][\"qux\"]", val], { foo: { '\"quote.key\"': { qux: val } } })
+          // eslint-disable-next-line quotes
+          testFunction(set, [{ foo: { '"quote.key"': { qux: old } } }, "[\"foo\"][\"\"quote.key\"\"][\"qux\"]", val], { foo: { '"quote.key"': { qux: val } } })
         })
       })
+    })
+
+    describe('overwrite', () => {
+      beforeEach(() => {
+        old = 1
+      })
+
+      testFunction(set, [{ foo: old }, 'foo.bar', val], { foo: { bar: val } })
     })
   })
 
