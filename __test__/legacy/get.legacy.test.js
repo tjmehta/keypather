@@ -1,3 +1,4 @@
+/* eslint-env jest */
 var get = require('../../get')
 
 describe('legacy tests: bracket notation', function () {
@@ -32,7 +33,7 @@ describe('legacy tests: bracket notation', function () {
   })
   describe("get(obj, '['foo.bar.baz']')", function () {
     beforeEach(function () {
-      obj = {foo:{bar:{baz:'foo.bar.bas'}}}
+      obj = { foo: { bar: { baz: 'foo.bar.bas' } } }
       obj['foo.bar.baz'] = Math.random()
     })
 
@@ -42,7 +43,7 @@ describe('legacy tests: bracket notation', function () {
   })
   describe("get(obj, 'some['foo.bar.baz']')", function () {
     beforeEach(function () {
-      obj = {foo:{bar:{baz:'foo.bar.bas'}}}
+      obj = { foo: { bar: { baz: 'foo.bar.bas' } } }
       obj['foo.bar.baz'] = Math.random()
       obj.some = { 'foo.bar.baz': Math.random() }
     })
@@ -53,7 +54,7 @@ describe('legacy tests: bracket notation', function () {
   })
   describe("get(obj, '['foo.bar.baz'].some')", function () {
     beforeEach(function () {
-      obj = {foo:{bar:{baz:'foo.bar.bas'}}}
+      obj = { foo: { bar: { baz: 'foo.bar.bas' } } }
       obj['foo.bar.baz'] = {
         one: Math.random(),
         some: Math.random()
@@ -67,7 +68,7 @@ describe('legacy tests: bracket notation', function () {
   })
   describe("get(obj, '['foo.bar.baz']['his.hers']')", function () {
     beforeEach(function () {
-      obj = {foo:{bar:{baz:'foo.bar.bas'}}}
+      obj = { foo: { bar: { baz: 'foo.bar.bas' } } }
       obj['foo.bar.baz'] = {
         one: Math.random(),
         some: Math.random(),

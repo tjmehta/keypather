@@ -1,3 +1,4 @@
+/* eslint-env jest */
 var get = require('../../get')
 
 describe('mixed', function () {
@@ -90,7 +91,7 @@ describe('mixed', function () {
       expect(get(obj, "foo['bar'].baz")).toEqual(obj.foo.bar.baz)
     })
   })
-  describe('most complicated get', function() {
+  describe('most complicated get', function () {
     beforeEach(function () {
       obj = {
         NetworkSettings: {
@@ -98,7 +99,7 @@ describe('mixed', function () {
             '15000/tcp': [ {
               HostIp: '0.0.0.0',
               HostPort: '49166'
-            } ],
+            } ]
           }
         }
       }

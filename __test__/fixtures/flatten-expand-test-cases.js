@@ -49,7 +49,7 @@ module.exports.common = [
   // complex
   {
     full: {
-      foo: {a: 1, b: 2, c: 3},
+      foo: { a: 1, b: 2, c: 3 },
       bar: [1, 2, 3]
     },
     flat: {
@@ -64,8 +64,8 @@ module.exports.common = [
 
   {
     full: {
-      foo: {a: 1, b: 2, c: 3},
-      bar: [{a: 1}, {b: 2}, {c: 3}]
+      foo: { a: 1, b: 2, c: 3 },
+      bar: [{ a: 1 }, { b: 2 }, { c: 3 }]
     },
     flat: {
       'foo.a': 1,
@@ -97,7 +97,7 @@ module.exports.common = [
     full: [
       {
         foo: { bar: 100 },
-        qux: Object.assign([200, { baz: true }], {foo: 'foo'})
+        qux: Object.assign([200, { baz: true }], { foo: 'foo' })
       },
       'hello'
     ],
@@ -117,7 +117,7 @@ module.exports.common = [
   // opts: delimeter
   {
     full: {
-      foo: {a: 1, b: 2, c: 3},
+      foo: { a: 1, b: 2, c: 3 },
       bar: [1, 2, 3]
     },
     flat: {
