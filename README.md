@@ -1,7 +1,7 @@
 # keypather [![Build Status](https://travis-ci.org/tjmehta/keypather.png?branch=master)](https://travis-ci.org/tjmehta/keypather)
 
-Get or set a object values from a keypath string. Supports bracket notation, dot notation, and mixed notation.
-Ignores errors for deep keypaths by default.
+Get or set a object values from a keypath string. Supports bracket notation and dot notation.
+Ignores errors for missing deep keypaths by default.
 
 Safely handles string expressions - *No* ```eval``` or ```new Function``` code here!
 
@@ -42,7 +42,7 @@ import flatten from 'keypather/flatten'
 
 ## GET
 
-dot notation, bracket notation, and mixed notation all supported:
+dot notation and bracket notation supported:
 
 ```js
 var getKeypath = require('keypather/get');
@@ -54,35 +54,8 @@ var obj = {
   }
 };
 getKeypath(obj, "foo.bar.baz"); // val
+getKeypath(obj, "foo['bar'].baz"); // val
 getKeypath(obj, "['foo']['bar']['baz']"); // val
-```
-
-```js
-var getKeypath = require('keypather/get');
-var obj = {
-  foo: function () {
-    return function () {
-      return function () {
-        return 'val';
-      };
-    };
-  }
-};
-getKeypath(obj, "foo()()()"); // val
-```
-
-```js
-var getKeypath = require('keypather/get');
-var obj = {
-  foo: function () {
-    return {
-      bar: {
-        baz: 'val'
-      }
-    };
-  }
-};
-getKeypath(obj, "foo()['bar'].baz"); // val
 ```
 
 Get returns `undefined` for keypaths that do not exist by default,
@@ -104,7 +77,7 @@ getKeypath(obj, "foo.bar.baz", { force: false });
 
 ## SET
 
-dot notation, bracket notation, and mixed notation all supported:
+dot notation and bracket notation supported:
 
 ```js
 var setKeypath = require('keypather/set');
