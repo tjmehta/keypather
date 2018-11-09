@@ -1,15 +1,16 @@
+/* eslint-env jest */
 var del = require('../../del')
 
 describe('legacy tests: del', function () {
-  describe("del(obj, 'foo.bar')", delTest("foo.bar"))
+  describe("del(obj, 'foo.bar')", delTest('foo.bar'))
   describe("del(obj, '['foo'].bar')", delTest("['foo'].bar"))
   describe("del(obj, 'foo['bar']')", delTest("foo['bar']"))
   describe("del(obj, '['foo']['bar']')", delTest("['foo']['bar']"))
-  describe("del(obj, 'foo.no.no')", delTest("foo.no.no", true))
+  describe("del(obj, 'foo.no.no')", delTest('foo.no.no', true))
   describe("del(obj, '['foo'].no.no')", delTest("['foo'].no.no", true))
   describe("del(obj, 'foo['no']['no']')", delTest("foo['no']['no']", true))
   describe("del(obj, '['foo']['no']['no']')", delTest("['foo']['no']['no']", true))
-  describe("del(obj, 'foo.bar.boom')", delTest("foo.bar.boom", false, true))
+  describe("del(obj, 'foo.bar.boom')", delTest('foo.bar.boom', false, true))
 })
 
 function delTest (keypath, missing, nestedMissing) {

@@ -1,9 +1,10 @@
+/* eslint-env jest */
 var expand = require('../../expand')
 
 describe('expand', function () {
   var obj
-  describe("expand(obj)", function () {
-    describe('simple', function() {
+  describe('expand(obj)', function () {
+    describe('simple', function () {
       beforeEach(function () {
         obj = {
           foo: Math.random()
@@ -16,7 +17,7 @@ describe('expand', function () {
         })
       })
     })
-    describe('nested', function() {
+    describe('nested', function () {
       beforeEach(function () {
         obj = {
           'foo.bar': Math.random()
@@ -31,7 +32,7 @@ describe('expand', function () {
         })
       })
     })
-    describe('mixed', function() {
+    describe('mixed', function () {
       beforeEach(function () {
         obj = {
           'foo.qux': 10,
@@ -57,8 +58,8 @@ describe('expand', function () {
       })
     })
   })
-  describe("expand(arr)", function () {
-    describe('simple', function() {
+  describe('expand(arr)', function () {
+    describe('simple', function () {
       beforeEach(function () {
         obj = {
           '[0]': 'foo',
@@ -73,7 +74,7 @@ describe('expand', function () {
         ])
       })
     })
-    describe('mixed', function() {
+    describe('mixed', function () {
       beforeEach(function () {
         obj = {
           '[0].foo.qux': 10,
@@ -100,14 +101,14 @@ describe('expand', function () {
         ])
       })
     })
-    describe('delimeter', function() {
+    describe('delimeter', function () {
       beforeEach(function () {
         obj = {
           'foo_qux': 'hello'
         }
       })
 
-      it('should expand the object', function(done) {
+      it('should expand the object', function (done) {
         expect(expand(obj, '_')).toEqual({
           foo: {
             qux: 'hello'
