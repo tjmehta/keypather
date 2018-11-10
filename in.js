@@ -1,5 +1,5 @@
-const inOperation = require('./lib/operations/in.js')
-const keypathReducer = require('./lib/keypath-reducer.js')
+var inOperation = require('./lib/operations/in.js')
+var keypathReducer = require('./lib/keypath-reducer.js')
 
 module.exports = keypathIn
 

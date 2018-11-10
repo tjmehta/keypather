@@ -2,7 +2,7 @@
 var keypathIn = require('../in')
 
 function testFunction (fn, args, expectedVal, only) {
-  const testFn = only ? test.only : test
+  var testFn = only ? test.only : test
   if (expectedVal instanceof Error || expectedVal instanceof RegExp) {
     testFn('should error: ' + fn.name + '("' + args[1] + '")', function () {
       expect(function () {

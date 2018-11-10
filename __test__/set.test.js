@@ -6,7 +6,7 @@ var old = {}
 var val = {}
 
 function testFunction (fn, args, expected, only) {
-  const testFn = only ? test.only : test
+  var testFn = only ? test.only : test
   if (expected instanceof Error || expected instanceof RegExp) {
     testFn('should error: ' + fn.name + '("' + args[1] + '")', function () {
       expect(function () {
@@ -112,14 +112,14 @@ describe('set', function () {
     describe('force: false', function () {
       describe('dot notation', function () {
         testFunction(set, [{}, 'foo', val, { force: false }], { foo: val })
-        testFunction(set, [{}, 'foo.bar.qux', val, { force: false }], /bar.*foo.*foo.bar.qux/)
-        testFunction(set, [{ foo: {} }, 'foo.bar.qux', val, { force: false }], /qux.*bar.*foo.bar.qux/)
+        testFunction(set, [{}, 'foo.bar.qux', val, { force: false }], /'bar' of undefined.*at keypath 'foo' of 'foo.bar.qux'/)
+        testFunction(set, [{ foo: {} }, 'foo.bar.qux', val, { force: false }], /'qux' of undefined.*at keypath 'foo.bar' of 'foo.bar.qux'/)
       })
 
       describe('bracket notation', function () {
         testFunction(set, [{}, '["foo"]', val, { force: false }], { foo: val })
-        testFunction(set, [{}, '["foo"]["bar"]', val, { force: false }], /bar.*\["foo"\].*.*\["foo"\]\["bar"\]/)
-        testFunction(set, [{ foo: {} }, '["foo"]["bar"]["qux"]', val, { force: false }], /qux.*\["bar"\].*\["foo"\]\["bar"\]\["qux"\]/)
+        testFunction(set, [{}, '["foo"]["bar"]', val, { force: false }], /'bar' of undefined.*at keypath '\["foo"\]' of '\["foo"\]\["bar"\]'/)
+        testFunction(set, [{ foo: {} }, '["foo"]["bar"]["qux"]', val, { force: false }], /'qux' of undefined.*at keypath '\["foo"\]\["bar"\]' of '\["foo"\]\["bar"\]\["qux"\]'/)
       })
     })
   })

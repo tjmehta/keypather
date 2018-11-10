@@ -2,7 +2,7 @@
 var get = require('../get')
 
 function testFunction (fn, args, expectedVal, only) {
-  const testFn = only ? test.only : test
+  var testFn = only ? test.only : test
   if (expectedVal instanceof Error || expectedVal instanceof RegExp) {
     testFn('should error: ' + fn.name + '("' + args[1] + '")', function () {
       expect(function () {
@@ -106,14 +106,14 @@ describe('get', function () {
     describe('force: false', function () {
       describe('dot notation', function () {
         testFunction(get, [{ }, 'foo', { force: false }], undefined)
-        testFunction(get, [{ }, 'foo.bar.qux', { force: false }], /bar.*foo.bar.qux/)
-        testFunction(get, [{ foo: {} }, 'foo.bar.qux', { force: false }], /qux.*foo.bar.qux/)
+        testFunction(get, [{ }, 'foo.bar.qux', { force: false }], /'bar' of undefined.*at keypath 'foo' of 'foo.bar.qux'/)
+        testFunction(get, [{ foo: {} }, 'foo.bar.qux', { force: false }], /'qux' of undefined.*at keypath 'foo.bar' of 'foo.bar.qux'/)
       })
 
       describe('bracket notation', function () {
         testFunction(get, [{ }, '["foo"]', { force: false }], undefined)
-        testFunction(get, [{ }, '["foo"]["bar"]', { force: false }], /bar.*\["foo"\]\["bar"\]/)
-        testFunction(get, [{ foo: {} }, '["foo"]["bar"]["qux"]', { force: false }], /qux.*\["foo"\]\["bar"\]\["qux"\]/)
+        testFunction(get, [{ }, '["foo"]["bar"]', { force: false }], /'bar' of undefined.*at keypath '\["foo"\]' of '\["foo"\]\["bar"\]'/)
+        testFunction(get, [{ foo: {} }, '["foo"]["bar"]["qux"]', { force: false }], /'qux' of undefined.*'\["foo"\]\["bar"\]' of '\["foo"\]\["bar"\]\["qux"\]'/)
       })
     })
   })

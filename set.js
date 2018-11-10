@@ -1,5 +1,5 @@
-const keypathReducer = require('./lib/keypath-reducer.js')
-const setOperation = require('./lib/operations/set.js')
+var keypathReducer = require('./lib/keypath-reducer.js')
+var setOperation = require('./lib/operations/set.js')
 
 module.exports = setKeypath
 
