@@ -65,14 +65,12 @@ but can also throw errors with `{ force: false }`
 var getKeypath = require('keypather/get');
 var obj = {}
 
-// opts defaults to { force:true }
-getKeypath(obj, "foo.bar.baz");
-// returns undefined
+// opts defaults to { force: true }
+getKeypath(obj, "foo.bar.baz"); // returns undefined
 
 // use force: false to throw errors for non-existant paths
-getKeypath(obj, "foo.bar.baz", { force: false });
-// throw's an error
-// Error: Cannot read property 'bar' of undefined (for keypath 'foo.bar.qux')
+getKeypath(obj, "foo.bar.baz", { force: false }); // throw's an error
+TypeError: Cannot read property 'bar' of undefined (for keypath 'foo.bar.baz')
 ```
 
 ## SET
@@ -97,10 +95,9 @@ setKeypath(obj, "['foo']['bar']['baz']", 'value'); // value
 Set forces creation by default:
 
 ```js
-var keypath = require('keypather')(); // equivalent to { force:true }
+var keypath = require('keypather/set'); // equivalent to { force:true }
 
-setKeypath({}, "foo.bar.baz", 'val');
-// returns 'val'
+setKeypath({}, "foo.bar.baz", 'val'); // returns 'val'
 // object becomes:
 // {
 //   foo: {
@@ -110,9 +107,8 @@ setKeypath({}, "foo.bar.baz", 'val');
 //   }
 // };
 
-setKeypath({}, "foo.bar.baz", 'val', { force: false });
-// throw's an error
-// Error: Cannot read property 'bar' of undefined (for keypath 'foo.bar.qux')
+setKeypath({}, "foo.bar.baz", 'val', { force: false }); // throw's an error
+TypeError: Cannot read property 'bar' of undefined (at keypath 'foo' of 'foo.bar.baz')
 ```
 
 ## IN
@@ -184,7 +180,7 @@ delKeypath(obj, "['foo']['bar']['baz']"); // true
 Flatten an object or array into a keypath object
 
 ```js
-var flatten = require('keypather/flatten')();
+var flatten = require('keypather/flatten');
 
 flatten({
   foo: {
