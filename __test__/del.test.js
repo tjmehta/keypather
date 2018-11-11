@@ -2,7 +2,7 @@
 var del = require('../del')
 
 function testFunction (fn, args, expectedVal, only) {
-  const testFn = only ? test.only : test
+  var testFn = only ? test.only : test
   if (expectedVal instanceof Error || expectedVal instanceof RegExp) {
     testFn('should error: ' + fn.name + '("' + args[1] + '")', function () {
       expect(function () {
@@ -123,10 +123,10 @@ describe('del', function () {
     })
 
     describe('invalid bracket notation', function () {
-      testFunction(del, [{ }, '['], /char 2.*END.*invalid bracket key/)
-      testFunction(del, [{ }, '[]'], /char 2.*\].*invalid bracket key/)
-      testFunction(del, [{ }, '[""'], /char 4.*END.*invalid bracket string key/)
-      testFunction(del, [{ }, '[2'], /char 3.*END.*invalid bracket number key/)
+      testFunction(del, [{ }, '['], /Unexpected end of keypath.*invalid bracket key/)
+      testFunction(del, [{ }, '[]'], /Unexpected token.*in keypath.*at position 1.*invalid bracket key/)
+      testFunction(del, [{ }, '[""'], /Unexpected end of keypath.*invalid bracket string key/)
+      testFunction(del, [{ }, '[2'], /Unexpected end of keypath.*invalid bracket number key/)
     })
   })
 })

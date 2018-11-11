@@ -1,5 +1,5 @@
-const hasOperation = require('./lib/operations/has.js')
-const keypathReducer = require('./lib/keypath-reducer.js')
+var hasOperation = require('./lib/operations/has.js')
+var keypathReducer = require('./lib/keypath-reducer.js')
 
 module.exports = keypathHas
 

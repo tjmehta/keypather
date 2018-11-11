@@ -2,7 +2,7 @@
 var get = require('../get')
 
 function testFunction (fn, args, expectedVal, only) {
-  const testFn = only ? test.only : test
+  var testFn = only ? test.only : test
   if (expectedVal instanceof Error || expectedVal instanceof RegExp) {
     testFn('should error: ' + fn.name + '("' + args[1] + '")', function () {
       expect(function () {
@@ -106,40 +106,43 @@ describe('get', function () {
     describe('force: false', function () {
       describe('dot notation', function () {
         testFunction(get, [{ }, 'foo', { force: false }], undefined)
-        testFunction(get, [{ }, 'foo.bar.qux', { force: false }], /bar.*foo.bar.qux/)
-        testFunction(get, [{ foo: {} }, 'foo.bar.qux', { force: false }], /qux.*foo.bar.qux/)
+        testFunction(get, [{ }, 'foo.bar.qux', { force: false }], /'bar' of undefined.*at keypath 'foo' of 'foo.bar.qux'/)
+        testFunction(get, [{ foo: {} }, 'foo.bar.qux', { force: false }], /'qux' of undefined.*at keypath 'foo.bar' of 'foo.bar.qux'/)
       })
 
       describe('bracket notation', function () {
         testFunction(get, [{ }, '["foo"]', { force: false }], undefined)
-        testFunction(get, [{ }, '["foo"]["bar"]', { force: false }], /bar.*\["foo"\]\["bar"\]/)
-        testFunction(get, [{ foo: {} }, '["foo"]["bar"]["qux"]', { force: false }], /qux.*\["foo"\]\["bar"\]\["qux"\]/)
+        testFunction(get, [{ }, '["foo"]["bar"]', { force: false }], /'bar' of undefined.*at keypath '\["foo"\]' of '\["foo"\]\["bar"\]'/)
+        testFunction(get, [{ foo: {} }, '["foo"]["bar"]["qux"]', { force: false }], /'qux' of undefined.*'\["foo"\]\["bar"\]' of '\["foo"\]\["bar"\]\["qux"\]'/)
       })
     })
   })
 
   describe('errors', function () {
     describe('invalid dot notation', function () {
-      testFunction(get, [{ }, '.'], /invalid dot key/)
-      testFunction(get, [{ }, '9'], /invalid dot key/)
-      testFunction(get, [{ }, 'foo..bar'], /invalid dot key/)
-      testFunction(get, [{ }, 'foo...bar'], /invalid dot key/)
+      testFunction(get, [{ }, '.'], /0.*invalid dot key/)
+      testFunction(get, [{ }, '9'], /0.*invalid dot key/)
+      testFunction(get, [{ }, 'foo..bar'], /4.*invalid dot key/)
+      testFunction(get, [{ }, 'foo...bar'], /4.*invalid dot key/)
     })
 
     describe('invalid bracket notation', function () {
-      testFunction(get, [{ }, '['], /char 2.*END.*invalid bracket key/)
-      testFunction(get, [{ }, '[]'], /char 2.*\].*invalid bracket key/)
-      testFunction(get, [{ }, '[""'], /char 4.*END.*invalid bracket string key/)
-      testFunction(get, [{ }, '["g]'], /char 5.*END.*invalid bracket string key/)
-      testFunction(get, [{ }, '["g].yo'], /char 8.*END.*invalid bracket string key/)
-      testFunction(get, [{ }, '[yo]'], /char 2.*y.*invalid bracket key/)
-      testFunction(get, [{ }, '[0]foo'], /char 4.*f.*invalid bracket key/)
-      testFunction(get, [{ }, 'foo.[0]'], /char 5.*\[.*invalid dot key/)
-      testFunction(get, [{ }, 'f-'], /char 2.*-.*invalid dot key/)
-      testFunction(get, [{ }, '.bar'], /char 1.*\..*invalid dot key/)
-      testFunction(get, [{ }, 'foo..bar'], /char 5.*\..*invalid dot key/)
-      testFunction(get, [{ }, '["0"]foo'], /char 9.*END.*invalid bracket string key/) // edge case due to js lack of ability to read escapes
-      testFunction(get, [{ }, '[2'], /char 3.*END.*invalid bracket number key/)
+      testFunction(get, [{ }, '['], /Unexpected end of keypath.*invalid bracket key/)
+      testFunction(get, [{ }, '[]'], /Unexpected token.*in keypath.*at position 1.*invalid bracket key/)
+      testFunction(get, [{ }, '["]'], /Unexpected token.*in keypath.*at position 2.*invalid bracket string key/)
+      testFunction(get, [{ }, "[']"], /Unexpected token.*in keypath.*at position 2.*invalid bracket string key/)
+      testFunction(get, [{ }, '[""'], /Unexpected end of keypath.*invalid bracket string key/)
+      testFunction(get, [{ }, '["g]'], /Unexpected end of keypath.*invalid bracket string key/)
+      testFunction(get, [{ }, '["g].yo'], /Unexpected end of keypath.*invalid bracket string key/)
+      testFunction(get, [{ }, 'foo.'], /Unexpected end of keypath.*invalid dot key/)
+      testFunction(get, [{ }, '[yo]'], /Unexpected token.*in keypath.*at position 1.*invalid bracket key/)
+      testFunction(get, [{ }, '[0]foo'], /Unexpected token.*in keypath.*at position 3.*invalid bracket key/)
+      testFunction(get, [{ }, 'foo.[0]'], /Unexpected token.*in keypath.*at position 4.*invalid dot key/)
+      testFunction(get, [{ }, 'f-'], /Unexpected token.*in keypath.*at position 1.*invalid dot key/)
+      testFunction(get, [{ }, '.bar'], /Unexpected token.*in keypath.*at position 0.*invalid dot key/)
+      testFunction(get, [{ }, 'foo..bar'], /Unexpected token.*in keypath.*at position 4.*invalid dot key/)
+      testFunction(get, [{ }, '["0"]foo'], /Unexpected end of keypath.*invalid bracket string key/) // edge case due to js lack of ability to read escapes
+      testFunction(get, [{ }, '[2'], /Unexpected end of keypath.*invalid bracket number key/)
     })
   })
 })

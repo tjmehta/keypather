@@ -2,7 +2,7 @@
 var keypathIn = require('../in')
 
 function testFunction (fn, args, expectedVal, only) {
-  const testFn = only ? test.only : test
+  var testFn = only ? test.only : test
   if (expectedVal instanceof Error || expectedVal instanceof RegExp) {
     testFn('should error: ' + fn.name + '("' + args[1] + '")', function () {
       expect(function () {
@@ -110,17 +110,17 @@ describe('keypathIn', function () {
 
   describe('errors', function () {
     describe('invalid dot notation', function () {
-      testFunction(keypathIn, [{ }, '.'], /invalid dot key/)
-      testFunction(keypathIn, [{ }, '9'], /invalid dot key/)
-      testFunction(keypathIn, [{ }, 'foo..bar'], /invalid dot key/)
-      testFunction(keypathIn, [{ }, 'foo...bar'], /invalid dot key/)
+      testFunction(keypathIn, [{ }, '.'], /0.*invalid dot key/)
+      testFunction(keypathIn, [{ }, '9'], /0.*invalid dot key/)
+      testFunction(keypathIn, [{ }, 'foo..bar'], /4.*invalid dot key/)
+      testFunction(keypathIn, [{ }, 'foo...bar'], /4.*invalid dot key/)
     })
 
     describe('invalid bracket notation', function () {
-      testFunction(keypathIn, [{ }, '['], /char 2.*END.*invalid bracket key/)
-      testFunction(keypathIn, [{ }, '[]'], /char 2.*\].*invalid bracket key/)
-      testFunction(keypathIn, [{ }, '[""'], /char 4.*END.*invalid bracket string key/)
-      testFunction(keypathIn, [{ }, '[2'], /char 3.*END.*invalid bracket number key/)
+      testFunction(keypathIn, [{ }, '['], /Unexpected end of keypath.*invalid bracket key/)
+      testFunction(keypathIn, [{ }, '[]'], /1.*invalid bracket key/)
+      testFunction(keypathIn, [{ }, '[""'], /Unexpected end of keypath.*invalid bracket string key/)
+      testFunction(keypathIn, [{ }, '[2'], /Unexpected end of keypath.*invalid bracket number key/)
     })
   })
 })

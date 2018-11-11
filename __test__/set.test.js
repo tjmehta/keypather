@@ -6,7 +6,7 @@ var old = {}
 var val = {}
 
 function testFunction (fn, args, expected, only) {
-  const testFn = only ? test.only : test
+  var testFn = only ? test.only : test
   if (expected instanceof Error || expected instanceof RegExp) {
     testFn('should error: ' + fn.name + '("' + args[1] + '")', function () {
       expect(function () {
@@ -112,31 +112,31 @@ describe('set', function () {
     describe('force: false', function () {
       describe('dot notation', function () {
         testFunction(set, [{}, 'foo', val, { force: false }], { foo: val })
-        testFunction(set, [{}, 'foo.bar.qux', val, { force: false }], /bar.*foo.*foo.bar.qux/)
-        testFunction(set, [{ foo: {} }, 'foo.bar.qux', val, { force: false }], /qux.*bar.*foo.bar.qux/)
+        testFunction(set, [{}, 'foo.bar.qux', val, { force: false }], /'bar' of undefined.*at keypath 'foo' of 'foo.bar.qux'/)
+        testFunction(set, [{ foo: {} }, 'foo.bar.qux', val, { force: false }], /'qux' of undefined.*at keypath 'foo.bar' of 'foo.bar.qux'/)
       })
 
       describe('bracket notation', function () {
         testFunction(set, [{}, '["foo"]', val, { force: false }], { foo: val })
-        testFunction(set, [{}, '["foo"]["bar"]', val, { force: false }], /bar.*\["foo"\].*.*\["foo"\]\["bar"\]/)
-        testFunction(set, [{ foo: {} }, '["foo"]["bar"]["qux"]', val, { force: false }], /qux.*\["bar"\].*\["foo"\]\["bar"\]\["qux"\]/)
+        testFunction(set, [{}, '["foo"]["bar"]', val, { force: false }], /'bar' of undefined.*at keypath '\["foo"\]' of '\["foo"\]\["bar"\]'/)
+        testFunction(set, [{ foo: {} }, '["foo"]["bar"]["qux"]', val, { force: false }], /'qux' of undefined.*at keypath '\["foo"\]\["bar"\]' of '\["foo"\]\["bar"\]\["qux"\]'/)
       })
     })
   })
 
   describe('errors', function () {
     describe('invalid dot notation', function () {
-      testFunction(set, [{}, '.'], /invalid dot key/)
-      testFunction(set, [{}, '9'], /invalid dot key/)
-      testFunction(set, [{}, 'foo..bar'], /invalid dot key/)
-      testFunction(set, [{}, 'foo...bar'], /invalid dot key/)
+      testFunction(set, [{}, '.'], /0.*invalid dot key/)
+      testFunction(set, [{}, '9'], /0.*invalid dot key/)
+      testFunction(set, [{}, 'foo..bar'], /4.*invalid dot key/)
+      testFunction(set, [{}, 'foo...bar'], /4.*invalid dot key/)
     })
 
     describe('invalid bracket notation', function () {
-      testFunction(set, [{}, '['], /char 2.*END.*invalid bracket key/)
-      testFunction(set, [{}, '[]'], /char 2.*\].*invalid bracket key/)
-      testFunction(set, [{}, '[""'], /char 4.*END.*invalid bracket string key/)
-      testFunction(set, [{}, '[2'], /char 3.*END.*invalid bracket number key/)
+      testFunction(set, [{}, '['], /Unexpected end of keypath.*invalid bracket key/)
+      testFunction(set, [{}, '[]'], /1.*invalid bracket key/)
+      testFunction(set, [{}, '[""'], /Unexpected end of keypath.*invalid bracket string key/)
+      testFunction(set, [{}, '[2'], /Unexpected end of keypath.*invalid bracket number key/)
     })
   })
 })

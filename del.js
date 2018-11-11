@@ -1,5 +1,5 @@
-const delOperation = require('./lib/operations/del.js')
-const keypathReducer = require('./lib/keypath-reducer.js')
+var delOperation = require('./lib/operations/del.js')
+var keypathReducer = require('./lib/keypath-reducer.js')
 
 module.exports = del
 

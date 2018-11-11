@@ -3,6 +3,8 @@ var defaults = require('101/defaults')
 var exists = require('101/exists')
 var isObject = require('101/is-object')
 
+var keyRequiresBracketNotation = require('./lib/key-requires-bracket-notation')
+
 module.exports = function flatten (obj, opts) {
   debug('flatten %O %O', obj, opts)
   opts = exists(opts) ? opts : {}
@@ -22,11 +24,11 @@ module.exports = function flatten (obj, opts) {
 
     // convert key to bracket key if necessary
     var isBracketKey = false
-    if (isArray) {
+    if (isArray && /^[0-9]+$/.test(key)) {
       // obj is array, use bracket key
       isBracketKey = true
-      key = /^[0-9]+$/.test(key) ? '[' + key + ']' : '["' + key + '"]'
-    } else if (!/^[A-Za-z_$]/.test(key)) {
+      key = '[' + key + ']'
+    } else if (keyRequiresBracketNotation(key)) {
       // key starts with invalid char for dot key, use bracket key
       isBracketKey = true
       key = '["' + key + '"]'
