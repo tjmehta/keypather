@@ -1,103 +1,165 @@
 # keypather [![Build Status](https://travis-ci.org/tjmehta/keypather.png?branch=master)](https://travis-ci.org/tjmehta/keypather)
 
-Get or set a object values from a keypath string. Supports bracket notation and dot notation.
+Get or set a object values from a keypath string. Supports bracket and dot notation.
 Ignores errors for missing deep keypaths by default.
 
-Safely handles string expressions - *No* ```eval``` or ```new Function``` code here!
+Parses keypath using vanilla JS - No ```eval``` or ```new Function``` hacks!
 
 # Installation
 ```bash
 npm install keypather
 ```
 
-# Examples
-
 # Usage
 
-## Import
+## Examples
 
-With require:
-
+### Import
 ```js
-var getKeypath = require('keypather/get')
-var setKeypath = require('keypather/set')
-var delKeypath = require('keypather/del')
-var keypathIn = require('keypather/in')
-var hasKeypath = require('keypather/has')
-var expand = require('keypather/expand')
-var flatten = require('keypather/flatten')
+const get = require('keypather/get')
+const set = require('keypather/set')
+const del = require('keypather/del')
+const keypathIn = require('keypather/in')
+const hasKeypath = require('keypather/has')
+const expand = require('keypather/expand')
+const flatten = require('keypather/flatten')
 ```
 
-With ES6 import:
-
+### GET, SET, DEL Example
 ```js
-import getKeypath from 'keypather/get'
-import setKeypath from 'keypather/set'
-import delKeypath from 'keypather/del'
-import keypathIn from 'keypather/in'
-import hasKeypath from 'keypather/has'
-import expand from 'keypather/expand'
-import flatten from 'keypather/flatten'
+const get = require('keypather/get')
+const set = require('keypather/set')
+const del = require('keypather/del')
+
+let obj
+
+// Objects
+obj = { foo: { bar: 100 } }
+get(obj, 'foo.bar')          // returns 100
+del(obj, '["foo"]["bar"]')   // obj is { foo: { bar: undefined } }
+set(obj, 'foo.bar.qux', 200) // obj is { foo: { bar: { qux: 200 } } }
+get(obj, 'foo["bar"].qux')   // returns 200
+
+// Arrays
+obj = { }
+set(obj, 'foo[0]', 100)      // obj is { foo: [ 100 ] }
 ```
 
-## GET
+### HAS, IN Example
+```js
+const hasKeypath = require('keypather/has')
+const keypathIn = require('keypather/in')
 
-dot notation and bracket notation supported:
+const obj = { foo: Object.create({ bar: 100 }) }
+
+hasKeypath(obj, 'foo.bar') // returns false
+keypathIn(obj, 'foo.bar')  // returns true
+```
+
+### FLATTEN, EXPAND Example
+```js
+const expand = require('keypather/expand')
+const flatten = require('keypather/flatten')
+
+const obj = expand({
+  'foo.bar': 1,
+  'foo.qux[0]': 100,  
+  'foo["qux"][1]': 200,
+  'foo.qux.wut': 'val'
+})
+// obj is { foo { bar: 1, qux: [ 100, 200, wut: 'val' ] } }
+const flat = flatten(obj)
+// flat is { 'foo.bar': 1, 'foo.qux': 2 } }
+```
+
+### Errors Example
+```js
+/* Missing deep values w/ "force: false" */
+get({}, 'foo.bar', { force: false })
+set({}, 'foo.bar', 100, { force: false })
+del({}, 'foo.bar', { force: false })
+// TypeError: Cannot read property 'bar' of undefined (at keypath 'foo' of 'foo.bar')
+get({ foo: {} }, 'foo.bar', { force: false })
+set({ foo: {} }, 'foo.bar', 100, { force: false })
+del({ foo: {} }, 'foo.bar', { force: false })
+// TypeError: Cannot read property 'bar' of undefined (at keypath 'foo.bar' of 'foo.bar.qux')
+hasKeypath({}, 'foo.bar', { force: false })
+// TypeError: Cannot read property 'hasOwnProperty' of undefined (hasOwnProperty('bar') errored at keypath 'foo' of 'foo.bar')
+keypathIn({}, 'foo.bar', { force: false })
+// TypeError: Cannot use 'in' operator to search for 'bar' in undefined (at 'foo' of 'foo.bar')
+keypathIn({}, 'foo.bar.qux', { force: false })
+hasKeypath({}, 'foo.bar.qux', { force: false })
+// TypeError: Cannot read property 'bar' of undefined (at keypath 'foo' of 'foo.bar.qux')
+
+/* Invalid keypaths */
+get({}, 'foo.1bar')
+// Error: Unexpected token '1' in keypath 'foo.1bar' at position 4 (invalid dot key)
+get({}, 'foo[]')       
+// Error: Unexpected token ']' in keypath 'foo[]' at position 4 (invalid bracket key)
+get({}, 'foo["]')
+// Error: Unexpected token ']' in keypath 'foo[]' at position 5 (invalid bracket string key)
+get({}, 'foo.')
+// Error: Unexpected end of keypath 'foo.' (invalid dot key)
+get({}, 'foo[')
+// Error: Unexpected end of keypath 'foo[' (invalid bracket key)
+get({}, "foo['")
+// Error: Unexpected end of keypath 'foo['' (invalid bracket string key)
+```
+
+## Documentation
+
+### GET
+Returns value of obj at keypath
+* @param {any} obj - context to read keypath from
+* @param {string} keypath - bracket and/or dot notation keypath string
+* @param {?object} opts - optional, defaults to { force: true }
+*   opts.force - force specifies whether non-existant keypaths should be ignored, defaults to true
+* @returns {any} value at keypath
 
 ```js
-var getKeypath = require('keypather/get');
-var obj = {
+const get = require('keypather/get');
+const obj = {
   foo: {
     bar: {
       baz: 'val'
     }
   }
 };
-getKeypath(obj, "foo.bar.baz"); // val
-getKeypath(obj, "foo['bar'].baz"); // val
-getKeypath(obj, "['foo']['bar']['baz']"); // val
+get(obj, "foo.bar.baz");           // returns 'val'
+get(obj, "foo['bar'].baz");        // returns 'val'
+get(obj, "['foo']['bar']['baz']"); // returns 'val'
 ```
 
-Get returns `undefined` for keypaths that do not exist by default,
-but can also throw errors with `{ force: false }`
+### SET
+Sets a value in obj at keypath. If force=true, set will intelligently create objects at non-existant
+keys in the keypath. If the non-existant key is a number, its value will be initialized as an array.
+* @param {any} obj - context to read keypath from
+* @param {string} keypath - bracket and/or dot notation keypath string to read from obj
+* @returns {any} value - value to set at keypath
+* @param {?object} opts - optional, defaults to { force: true }
+*   opts.force - force specifies whether non-existant keys in keypath should be created, defaults to true
+* @returns {any} value set at keypath
 
 ```js
-var getKeypath = require('keypather/get');
-var obj = {}
-
-// opts defaults to { force: true }
-getKeypath(obj, "foo.bar.baz"); // returns undefined
-
-// use force: false to throw errors for non-existant paths
-getKeypath(obj, "foo.bar.baz", { force: false }); // throw's an error
-TypeError: Cannot read property 'bar' of undefined (for keypath 'foo.bar.baz')
-```
-
-## SET
-
-dot notation and bracket notation supported:
-
-```js
-var setKeypath = require('keypather/set');
-var obj = {
+const set = require('keypather/set');
+const obj = {
   foo: {
-      bar: {
-        baz: 'val'
-      }
+    bar: {
+      baz: 'val'
     }
   }
 };
-setKeypath(obj, "foo['bar'].baz", 'value'); // value
-setKeypath(obj, "foo.bar.baz", 'value'); // value
-setKeypath(obj, "['foo']['bar']['baz']", 'value'); // value
+set(obj, "foo['bar'].baz", 'val');        // returns 'val'
+set(obj, "foo.bar.baz", 'val');           // returns 'val'
+set(obj, "['foo']['bar']['baz']", 'val'); // returns 'val'
 ```
 
 Set forces creation by default:
 
 ```js
-var keypath = require('keypather/set'); // equivalent to { force:true }
+const set = require('keypather/set'); // equivalent to { force:true }
 
-setKeypath({}, "foo.bar.baz", 'val'); // returns 'val'
+set({}, "foo.bar.baz", 'val'); // returns 'val'
 // object becomes:
 // {
 //   foo: {
@@ -107,65 +169,31 @@ setKeypath({}, "foo.bar.baz", 'val'); // returns 'val'
 //   }
 // };
 
-setKeypath({}, "foo.bar.baz", 'val', { force: false }); // throw's an error
-TypeError: Cannot read property 'bar' of undefined (at keypath 'foo' of 'foo.bar.baz')
+// Errors, force=false
+set({}, "foo.bar.baz", 'val', { force: false }); // throw's an error
+// Error: Cannot read property 'bar' of undefined (at keypath 'foo' of 'foo.bar.baz')
 ```
 
-## IN
-
-Equivalent to `key in obj`
+### DEL
+Deletes value a keypath in obj. Similar to `delete obj.key`.
+* @param {any} obj - context to read keypath from
+* @param {string} keypath - bracket and/or dot notation keypath string to delete from obj
+* @param {?object} opts - optional, defaults to { force: true }
+*   opts.force - force specifies whether non-existant keypaths should be ignored, defaults to true
+* @returns {boolean} true for all cases except when the property is non-configurable, false in non-strict mode
 
 ```js
-var keypathIn = require('keypather/in');
-var obj = {
+const del = require('keypather/del');
+const obj = {
   foo: {
-      bar: {
-        baz: 'val'
-      }
+    bar: {
+      baz: 'val'
     }
   }
 };
-keypathIn(obj, "foo['bar'].baz");        // true
-keypathIn(obj, "foo.bar.baz");           // true
-keypathIn(obj, "['foo']['bar']['baz']"); // true
-```
-
-## HAS
-
-Equivalent to `obj.hasOwnProperty`
-
-```js
-var hasKeypath = require('keypather/has');
-var obj = {
-  foo: {
-      bar: {
-        baz: 'val'
-      }
-    }
-  }
-};
-hasKeypath(obj, "foo['bar'].baz");        // true
-hasKeypath(obj, "foo.bar.baz");           // true
-hasKeypath(obj, "['foo']['bar']['baz']"); // true
-```
-
-## DEL
-
-Equivalent to `delete obj.key`
-
-```js
-var delKeypath = require('keypather/del');
-var obj = {
-  foo: {
-      bar: {
-        baz: 'val'
-      }
-    }
-  }
-};
-delKeypath(obj, "foo['bar'].baz");        // true
-delKeypath(obj, "foo.bar.baz");           // true
-delKeypath(obj, "['foo']['bar']['baz']"); // true
+del(obj, "foo['bar'].baz");        // true
+del(obj, "foo.bar.baz");           // true
+del(obj, "['foo']['bar']['baz']"); // true
 // obj becomes:
 // {
 //   foo: {
@@ -173,14 +201,82 @@ delKeypath(obj, "['foo']['bar']['baz']"); // true
 //   }
 // }
 
+// Errors, force=false
+del(obj, "one.two.three", 'val', { force: false }); // throw's an error
+// Error: Cannot read property 'two' of undefined (at keypath 'one' of 'one.two.three')
 ```
 
-## FLATTEN
+### IN
+Returns true if keypath is "in" the obj at the keypath. Similar to "in" operator.
+* @param {any} obj - context to read keypath in
+* @param {string} keypath - bracket and/or dot notation keypath string to read from obj
+* @param {?object} opts - optional, defaults to { force: true }
+*   opts.force - force specifies whether non-existant keypaths should be ignored, defaults to true
+* @returns {boolean} true if the keypath is "in" the obj, else false
+
+```js
+const keypathIn = require('keypather/in');
+const obj = {
+  foo: {
+    bar: {
+      baz: 'val'
+      __proto__: {
+        qux: 'val'
+      }
+    }
+  }
+};
+keypathIn(obj, "foo.bar.baz");           // true
+keypathIn(obj, "foo.bar.qux");           // true
+keypathIn(obj, "foo.bar.bing");          // false
+keypathIn(obj, "foo['bar'].baz");        // true
+keypathIn(obj, "one.two.three");         // false
+
+// Errors, force=false
+keypathIn(obj, "one.two.three", { force: false });
+// Error: Cannot read property 'two' of undefined (at keypath 'two' of 'one.two.three')
+keypathIn(obj, "foo.two.three", { force: false });
+// TypeError: Cannot use 'in' operator to search for 'three' in undefined (at 'foo.two' of 'foo.two.three')
+```
+
+### HAS
+Returns true if the obj has the keypath. Similar to `obj.hasOwnProperty`.
+* @param {any} obj - context to read keypath in
+* @param {string} keypath - bracket and/or dot notation keypath string to read from obj
+* @param {?object} opts - optional, defaults to { force: true }
+*   opts.force - force specifies whether non-existant keypaths should be ignored, defaults to true
+* @returns {boolean} true if the keypath is "in" the obj, else false
+
+```js
+const hasKeypath = require('keypather/has');
+const obj = {
+  foo: {
+    bar: {
+      baz: 'val'
+      __proto__: {
+        qux: 'val'
+      }
+    }
+  }
+};
+hasKeypath(obj, "foo.bar.baz");           // true
+hasKeypath(obj, "foo.bar.qux");           // false
+hasKeypath(obj, "['foo']['bar']['baz']"); // true
+hasKeypath(obj, "one.two.three");         // false
+
+// Errors, force=false
+hasKeypath(obj, "one.two.three", { force: false }); // throw's an error
+// Error: Cannot read property 'two' of undefined (at keypath 'two' of 'one.two.three
+hasKeypath(obj, "foo.two.three", { force: false });
+// Error: Cannot read property 'hasOwnProperty' of undefined (hasOwnProperty('three') errored at keypath 'foo.two' of 'foo.two.three')
+```
+
+### FLATTEN
 
 Flatten an object or array into a keypath object
 
 ```js
-var flatten = require('keypather/flatten');
+const flatten = require('keypather/flatten');
 
 flatten({
   foo: {
@@ -214,12 +310,12 @@ flatten({
 
 ```
 
-## EXPAND
+### EXPAND
 
 Expand a flattened object back into an object or array
 
 ```js
-var expand = require('keypather/expand');
+const expand = require('keypather/expand');
 
 expand({
   'foo.qux': 'hello',

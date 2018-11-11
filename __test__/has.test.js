@@ -115,10 +115,10 @@ describe('keypathHas', function () {
 
   describe('errors', function () {
     describe('invalid dot notation', function () {
-      testFunction(keypathHas, [{ }, '.'], /invalid dot key/)
-      testFunction(keypathHas, [{ }, '9'], /invalid dot key/)
-      testFunction(keypathHas, [{ }, 'foo..bar'], /invalid dot key/)
-      testFunction(keypathHas, [{ }, 'foo...bar'], /invalid dot key/)
+      testFunction(keypathHas, [{ }, '.'], /0.*invalid dot key/)
+      testFunction(keypathHas, [{ }, '9'], /0.*invalid dot key/)
+      testFunction(keypathHas, [{ }, 'foo..bar'], /4.*invalid dot key/)
+      testFunction(keypathHas, [{ }, 'foo...bar'], /4.*invalid dot key/)
     })
 
     var noHasOwn = {}
@@ -127,10 +127,10 @@ describe('keypathHas', function () {
     })
 
     describe('invalid bracket notation', function () {
-      testFunction(keypathHas, [{ }, '['], /char 2.*END.*invalid bracket key/)
-      testFunction(keypathHas, [{ }, '[]'], /char 2.*\].*invalid bracket key/)
-      testFunction(keypathHas, [{ }, '[""'], /char 4.*END.*invalid bracket string key/)
-      testFunction(keypathHas, [{ }, '[2'], /char 3.*END.*invalid bracket number key/)
+      testFunction(keypathHas, [{ }, '['], /Unexpected end of keypath.*invalid bracket key/)
+      testFunction(keypathHas, [{ }, '[]'], /1.*invalid bracket key/)
+      testFunction(keypathHas, [{ }, '[""'], /Unexpected end of keypath.*invalid bracket string key/)
+      testFunction(keypathHas, [{ }, '[2'], /Unexpected end of keypath.*invalid bracket number key/)
       testFunction(keypathHas, [{ foo: { bar: noHasOwn } }, 'foo.bar.qux'], /hasOwnProperty.*qux.*foo\.bar\.qux/)
     })
   })

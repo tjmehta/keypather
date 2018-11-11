@@ -96,6 +96,19 @@ module.exports.common = [
   {
     full: [
       {
+        foo: { 'bar.qux': 100 }
+      },
+      'hello'
+    ],
+    flat: {
+      '[0].foo["bar.qux"]': 100,
+      '[1]': 'hello'
+    }
+  },
+
+  {
+    full: [
+      {
         foo: { bar: 100 },
         qux: Object.assign([200, { baz: true }], { foo: 'foo' })
       },
@@ -103,7 +116,7 @@ module.exports.common = [
     ],
     flat: {
       '[0].foo.bar': 100,
-      '[0].qux["foo"]': 'foo',
+      '[0].qux.foo': 'foo',
       '[0].qux[0]': 200,
       '[0].qux[1].baz': true,
       '[1]': 'hello'
