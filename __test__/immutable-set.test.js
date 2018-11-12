@@ -33,7 +33,7 @@ function testFunction (fn, args, expected, only) {
       // should deep equal object modified w/ set
       expect(result).toEqual(expectedResult)
       expect(args[0]).toEqual(expected) // sanity
-      expect(Array.isArray(result)).toBe(Array.isArray(expectedResult))
+      expect(Array.isArray(args[0])).toBe(Array.isArray(expected))
       expectNoSharedChildren(result, expectedResult, val)
     })
   }
@@ -109,6 +109,7 @@ describe.only('immutable-set', function () {
         testFunction(immutableSet, [{}, 'foo', val], { foo: val })
         testFunction(immutableSet, [{}, 'foo.bar', val], { foo: { bar: val } })
         testFunction(immutableSet, [{ foo: { bar: {} } }, 'foo.bar.qux.duck', val], { foo: { bar: { qux: {duck: val} } } })
+        testFunction(immutableSet, [{}, 'foo[0]', val], { foo: [val] })
       })
 
       describe('bracket notation', function () {

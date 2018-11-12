@@ -26,6 +26,7 @@ function testFunction (fn, args, expected, only) {
       expect(val).toEqual({}) // safety check, since val is static
       expect(result).toBe(expectedResult)
       expect(args[0]).toEqual(expected)
+      expect(Array.isArray(args[0])).toBe(Array.isArray(expected))
     })
   }
 }
@@ -100,6 +101,7 @@ describe('set', function () {
         testFunction(set, [{}, 'foo', val], { foo: val })
         testFunction(set, [{}, 'foo.bar', val], { foo: { bar: val } })
         testFunction(set, [{ foo: {} }, 'foo.bar.qux', val], { foo: { bar: { qux: val } } })
+        testFunction(set, [{}, 'foo[0]', val], { foo: [val] })
       })
 
       describe('bracket notation', function () {
