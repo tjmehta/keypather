@@ -312,7 +312,7 @@ flatten({
 
 ### EXPAND
 Expand a flattened object back into an object or array
-* @param {any} obj - flattened object or array
+* @param {any} obj - flattened object or array to be expanded
 
 ```js
 const expand = require('keypather/expand');
