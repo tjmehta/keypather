@@ -2,6 +2,8 @@ var debug = require('debug')('keypather:expand')
 var exists = require('101/exists')
 var defaults = require('101/defaults')
 
+var arrayConversionCheck = require('./lib/array-conversion-check')
+var createObj = require('./lib/create-obj')
 var keypathReducer = require('./lib/keypath-reducer.js')
 var setOperation = require('./lib/operations/set.js')
 
@@ -14,6 +16,8 @@ module.exports = function keypatherExpand (obj, opts) {
   defaults(opts, {
     delimeter: '.'
   })
+  // expand requires force to create paths
+  opts.force = true
   var expanded = null
   var sharedState = {
     // hack: for root key, so that the root type created
@@ -41,7 +45,14 @@ function expandKeypath (ctx, keypath, val, sharedState, opts) {
     parentCtx: sharedState.parentCtx,
     createOperation: sharedState.createOperation
   }, function expandOperation (obj, key, state, opts) {
-    return setOperation(obj, key, state, opts)
+    // check if a created keypath needs to be converted to an array
+    if (!exists(obj)) {
+      // if obj does not exist and opts.force, create
+      obj = createObj(obj, key, state, opts)
+    }
+    var result = setOperation(obj, key, state, opts)
+    arrayConversionCheck(obj, key, state, opts)
+    return result
   }, opts)
   return sharedState.parentCtx.$root
 }
