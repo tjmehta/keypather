@@ -36,12 +36,12 @@ let obj
 // Objects
 obj = { foo: { bar: 100 } }
 get(obj, 'foo.bar')          // returns 100
-del(obj, '["foo"]["bar"]')   // obj is { foo: { bar: undefined } }
-set(obj, 'foo.bar.qux', 200) // obj is { foo: { bar: { qux: 200 } } }
+del(obj, '["foo"]["bar"]')   // obj becomes { foo: {} }, returns true
+set(obj, 'foo.bar.qux', 200) // obj becomes { foo: { bar: { qux: 200 } } }, returns 200
 get(obj, 'foo["bar"].qux')   // returns 200
 
 // Arrays
-obj = { }
+obj = {}
 set(obj, 'foo[0]', 100)      // obj is { foo: [ 100 ] }
 ```
 
@@ -272,8 +272,8 @@ hasKeypath(obj, "foo.two.three", { force: false });
 ```
 
 ### FLATTEN
-
 Flatten an object or array into a keypath object
+* @param {any} obj - object or array to flatten
 
 ```js
 const flatten = require('keypather/flatten');
@@ -311,8 +311,8 @@ flatten({
 ```
 
 ### EXPAND
-
 Expand a flattened object back into an object or array
+* @param {any} obj - flattened object or array
 
 ```js
 const expand = require('keypather/expand');

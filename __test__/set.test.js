@@ -47,6 +47,7 @@ describe('set', function () {
       describe('single quote', function () {
         testFunction(set, [{ foo: old }, "['foo']", val], { foo: val })
         testFunction(set, [[], '[0]', val], [val])
+        testFunction(set, [{}, '[0]', val], { '0': val })
         testFunction(set, [{ foo: { bar: old } }, "['foo']['bar']", val], { foo: { bar: val } })
         testFunction(set, [{ foo: { bar: { qux: old } } }, "['foo']['bar']['qux']", val], { foo: { bar: { qux: val } } })
         testFunction(set, [{ foo: { 'dot.key': { qux: old } } }, "['foo']['dot.key']['qux']", val], { foo: { 'dot.key': { qux: val } } })
@@ -102,6 +103,7 @@ describe('set', function () {
         testFunction(set, [{}, 'foo.bar', val], { foo: { bar: val } })
         testFunction(set, [{ foo: {} }, 'foo.bar.qux', val], { foo: { bar: { qux: val } } })
         testFunction(set, [{}, 'foo[0]', val], { foo: [val] })
+        testFunction(set, [{foo: {}}, 'foo[0]', val], { foo: { '0': val } })
       })
 
       describe('bracket notation', function () {

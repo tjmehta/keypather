@@ -55,6 +55,7 @@ describe.only('immutable-set', function () {
       describe('single quote', function () {
         testFunction(immutableSet, [{ foo: old }, "['foo']", val], { foo: val })
         testFunction(immutableSet, [[], '[0]', val], [val])
+        testFunction(immutableSet, [{}, '[0]', val], { '0': val })
         testFunction(immutableSet, [{ foo: { bar: old } }, "['foo']['bar']", val], { foo: { bar: val } })
         testFunction(immutableSet, [{ foo: { bar: { qux: old } } }, "['foo']['bar']['qux']", val], { foo: { bar: { qux: val } } })
         testFunction(immutableSet, [{ foo: { 'dot.key': { qux: old } } }, "['foo']['dot.key']['qux']", val], { foo: { 'dot.key': { qux: val } } })
