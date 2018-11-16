@@ -1,39 +1,47 @@
 /* eslint-env jest */
 var debug = require('debug')('keypather:set.test')
 var exists = require('101/exists')
+var deepEqual = require('fast-deep-equal')
+var deepFreeze = require('deep-freeze-strict')
 
 var set = require('../set')
 var immutableSet = require('../immutable-set')
 
-var old = {}
+var old = {old: 'old'}
 var val = {}
 
-function testFunction (fn, args, expected, only) {
+function testFunction (fn, args, expectedResult, only) {
   var testFn = only ? test.only : test
-  if (expected instanceof Error || expected instanceof RegExp) {
+  if (expectedResult instanceof Error || expectedResult instanceof RegExp) {
     testFn('should error: ' + fn.name + '("' + args[1] + '")', function () {
       expect(function () {
         fn.apply(null, args)
-      }).toThrow(expected)
+      }).toThrow(expectedResult)
     })
   } else {
     testFn('should ' + fn.name + '("' + args[1] + '")', function () {
+      var objUnchanged = deepEqual(args[0], expectedResult)
       var result = fn.apply(null, args)
-      set.apply(null, args)
-      var expectedResult = args[0]
+      if (!objUnchanged) set.apply(null, args)
+      var object = args[0]
       debug({
+        object: object,
+        keypath: args[1],
         result: result,
         expectedResult: expectedResult,
-        object: args[0],
-        expectedObject: expected
+        objUnchanged: objUnchanged
       })
       expect(val).toEqual({}) // safety check, since val is static
       // should not be the original object
-      expect(result).not.toBe(expectedResult)
+      if (objUnchanged) {
+        expect(result).toBe(object)
+      } else {
+        expect(result).not.toBe(object)
+      }
       // should deep equal object modified w/ set
       expect(result).toEqual(expectedResult)
-      expect(args[0]).toEqual(expected) // sanity
-      expect(Array.isArray(args[0])).toBe(Array.isArray(expected))
+      expect(result).toEqual(object) // modified object
+      expect(Array.isArray(result)).toBe(Array.isArray(object))
       expectNoSharedChildren(result, expectedResult, val)
     })
   }
@@ -45,6 +53,10 @@ testFunction.only = function (fn, args, expected) {
 
 describe.only('immutable-set', function () {
   describe('path exists', function () {
+    describe('object unchanged', () => {
+      testFunction(immutableSet, [deepFreeze({ foo: { bar: val }, zfoo: 1 }), 'foo.bar', val], { foo: { bar: val }, zfoo: 1 })
+    })
+
     describe('dot notation', function () {
       testFunction(immutableSet, [{ foo: old, zfoo: 1 }, 'foo', val], { foo: val, zfoo: 1 })
       testFunction(immutableSet, [{ foo: { bar: old, zbar: 2 }, zfoo: 1 }, 'foo.bar', val], { foo: { bar: val, zbar: 2 }, zfoo: 1 })
@@ -53,6 +65,7 @@ describe.only('immutable-set', function () {
 
     describe('bracket notation', function () {
       describe('single quote', function () {
+        testFunction(immutableSet, [{ foo: old }, "['foo']", val], { foo: val })
         testFunction(immutableSet, [{ foo: old }, "['foo']", val], { foo: val })
         testFunction(immutableSet, [[], '[0]', val], [val])
         testFunction(immutableSet, [{}, '[0]', val], { '0': val })
@@ -96,11 +109,7 @@ describe.only('immutable-set', function () {
     })
 
     describe('overwrite', () => {
-      beforeEach(() => {
-        old = 1
-      })
-
-      testFunction(immutableSet, [{ foo: old }, 'foo.bar', val], { foo: { bar: val } })
+      testFunction(immutableSet, [{ foo: 1 }, 'foo.bar', val], { foo: { bar: val } })
     })
   })
 
