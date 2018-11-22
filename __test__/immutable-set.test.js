@@ -7,7 +7,7 @@ var deepFreeze = require('deep-freeze-strict')
 var set = require('../set')
 var immutableSet = require('../immutable-set')
 
-var old = {old: 'old'}
+var old = { old: 'old' }
 var val = {}
 
 function testFunction (fn, args, expectedResult, only) {
@@ -51,7 +51,7 @@ testFunction.only = function (fn, args, expected) {
   testFunction(fn, args, expected, true)
 }
 
-describe.only('immutable-set', function () {
+describe('immutable-set', function () {
   describe('path exists', function () {
     describe('object unchanged', () => {
       testFunction(immutableSet, [deepFreeze({ foo: { bar: val }, zfoo: 1 }), 'foo.bar', val], { foo: { bar: val }, zfoo: 1 })
@@ -111,6 +111,11 @@ describe.only('immutable-set', function () {
     describe('overwrite', () => {
       testFunction(immutableSet, [{ foo: 1 }, 'foo.bar', val], { foo: { bar: val } })
     })
+
+    describe('overwrite: false', () => {
+      testFunction(immutableSet, [{ foo: 1, zfoo: 1 }, 'foo.bar', val, { overwritePrimitives: false }], { foo: 1, zfoo: 1 })
+      testFunction(immutableSet, [{ foo: 1, zfoo: 1 }, 'foo[0]', val, { overwritePrimitives: false }], { foo: 1, zfoo: 1 })
+    })
   })
 
   describe('path does not exist', function () {
@@ -118,7 +123,7 @@ describe.only('immutable-set', function () {
       describe('dot notation', function () {
         testFunction(immutableSet, [{}, 'foo', val], { foo: val })
         testFunction(immutableSet, [{}, 'foo.bar', val], { foo: { bar: val } })
-        testFunction(immutableSet, [{ foo: { bar: {} } }, 'foo.bar.qux.duck', val], { foo: { bar: { qux: {duck: val} } } })
+        testFunction(immutableSet, [{ foo: { bar: {} } }, 'foo.bar.qux.duck', val], { foo: { bar: { qux: { duck: val } } } })
         testFunction(immutableSet, [{}, 'foo[0]', val], { foo: [val] })
       })
 

@@ -1,7 +1,7 @@
 {
   "name": "keypather",
   "version": "3.0.0",
-  "description": "Get or set a object values from a keypath string. Supports bracket notation, dot notation, and functions",
+  "description": "Get or set a deep value using a keypath string. Supports bracket and dot notation",
   "main": "index.js",
   "scripts": {
     "lint": "standard",
@@ -14,18 +14,19 @@
   },
   "keywords": [
     "keypath",
+    "deep",
+    "get",
+    "set",
+    "check",
+    "existance",
     "value",
     "traversal",
     "dot",
-    "notation",
     "bracket",
     "notation",
-    "function",
     "path",
     "array",
     "object",
-    "dot",
-    "notation",
     "node",
     "module",
     "key",
@@ -42,6 +43,7 @@
     "101": "^1.6.2",
     "debug": "^3.1.0",
     "escape-string-regexp": "^1.0.5",
+    "shallow-clone": "^3.0.0",
     "string-reduce": "^1.0.0"
   },
   "devDependencies": {

@@ -1,9 +1,10 @@
 # keypather [![Build Status](https://travis-ci.org/tjmehta/keypather.png?branch=master)](https://travis-ci.org/tjmehta/keypather)
 
-Get or set a object values from a keypath string. Supports bracket and dot notation.
-Ignores errors for missing deep keypaths by default.
+Get, set, or delete a deep value using a keypath string.
 
-Parses keypath using vanilla JS - No ```eval``` or ```new Function``` hacks!
+A collection of keypath utilities: get, set, del, in, has, flatten, expand, and immutable set/del.
+
+Lightweight and parses keypaths using vanilla JS - No ```eval``` or ```new Function``` hacks!
 
 # Installation
 ```bash
@@ -16,9 +17,12 @@ npm install keypather
 
 ### Import
 ```js
+// modular imports, so you can keep your bundle lean
 const get = require('keypather/get')
 const set = require('keypather/set')
 const del = require('keypather/del')
+const immutableSet = require('keypather/immutable-set')
+const immutableDel = require('keypather/immutable-del')
 const keypathIn = require('keypather/in')
 const hasKeypath = require('keypather/has')
 const expand = require('keypather/expand')
@@ -36,13 +40,42 @@ let obj
 // Objects
 obj = { foo: { bar: 100 } }
 get(obj, 'foo.bar')          // returns 100
-del(obj, '["foo"]["bar"]')   // obj becomes { foo: {} }, returns true
-set(obj, 'foo.bar.qux', 200) // obj becomes { foo: { bar: { qux: 200 } } }, returns 200
+del(obj, '["foo"]["bar"]')   // returns true, obj becomes { foo: {} }
+set(obj, 'foo.bar.qux', 200) // returns 200, obj becomes { foo: { bar: { qux: 200 } } }
 get(obj, 'foo["bar"].qux')   // returns 200
 
 // Arrays
 obj = {}
 set(obj, 'foo[0]', 100)      // obj is { foo: [ 100 ] }
+```
+
+### Immutable SET, DEL Example
+```js
+const set = require('keypather/immutable-set')
+const del = require('keypather/immutable-del')
+
+let obj
+let out
+
+// Objects
+obj = { foo: { bar: 100 } }
+out = set(obj, 'foo.bar', 100)     // returns obj
+// out === obj,
+// since it was not modified
+out = set(obj, 'foo.bar.qux', 200) // returns { foo: { bar: { qux: 200 } } }
+// out !== obj,
+// obj is still { foo: { bar: 100 } }
+out = del(obj, 'one.two.three')    // returns obj
+// out === obj,
+// since it was not modified
+out = del(obj, 'foo.bar.qux')     // returns { foo: { bar: {} } }
+// out !== obj,
+// obj is still { foo: { bar: { qux: 200 } } }
+
+// Arrays
+obj = {}
+out = set(obj, 'foo[0]', 100) // returns { foo: [ 100 ] } (new)
+// out !== obj, obj is still { foo: { bar: 100 } }
 ```
 
 ### HAS, IN Example
@@ -52,8 +85,9 @@ const keypathIn = require('keypather/in')
 
 const obj = { foo: Object.create({ bar: 100 }) }
 
-hasKeypath(obj, 'foo.bar') // returns false
+hasKeypath(obj, 'foo.bar') // returns false (bar is on proto)
 keypathIn(obj, 'foo.bar')  // returns true
+hasKeypath(obj, 'foo')     // returns true
 ```
 
 ### FLATTEN, EXPAND Example
@@ -78,10 +112,14 @@ const flat = flatten(obj)
 get({}, 'foo.bar', { force: false })
 set({}, 'foo.bar', 100, { force: false })
 del({}, 'foo.bar', { force: false })
+immutableSet({}, 'foo.bar', 100, { force: false })
+immutableDel({}, 'foo.bar', { force: false })
 // TypeError: Cannot read property 'bar' of undefined (at keypath 'foo' of 'foo.bar')
 get({ foo: {} }, 'foo.bar', { force: false })
 set({ foo: {} }, 'foo.bar', 100, { force: false })
 del({ foo: {} }, 'foo.bar', { force: false })
+immutableSet({ foo: {} }, 'foo.bar', 100, { force: false })
+immutableDel({ foo: {} }, 'foo.bar', { force: false })
 // TypeError: Cannot read property 'bar' of undefined (at keypath 'foo.bar' of 'foo.bar.qux')
 hasKeypath({}, 'foo.bar', { force: false })
 // TypeError: Cannot read property 'hasOwnProperty' of undefined (hasOwnProperty('bar') errored at keypath 'foo' of 'foo.bar')
@@ -90,6 +128,23 @@ keypathIn({}, 'foo.bar', { force: false })
 keypathIn({}, 'foo.bar.qux', { force: false })
 hasKeypath({}, 'foo.bar.qux', { force: false })
 // TypeError: Cannot read property 'bar' of undefined (at keypath 'foo' of 'foo.bar.qux')
+
+/* Warnings for set and immutable-set */
+// by default, set will overwrite primitives (string, number or regexp) to an object or array.
+// when overwritePrimitives is set to false, sets will warn when settings a key on a primitive
+// to disable all warnings use the option { warn: false }
+set({}, '[0]', 'val', { overwritePrimitives: false })
+// log: Setting number key (0) on object at keypath '' of '[0]')
+set([], 'key', 'val', { overwritePrimitives: false })
+// log: Setting string key 'foo' on array at keypath '' of 'foo')
+set({ foo: 1 }, 'foo.qux', 'val', { overwritePrimitives: false })
+// log: Setting key 'qux' on number 1 at keypath 'foo' of 'foo.qux')
+set({ foo: 1 }, 'foo[0]', 'val', { overwritePrimitives: false })
+// log: Setting number key (0) on number 1 at keypath 'foo' of 'foo[0]')
+set({ foo: 'str' }, 'foo.bar', 'val', { overwritePrimitives: false })
+// log: Setting key 'bar' on string 'str' at keypath 'foo' of 'foo.bar')
+set({ foo: {} }, 'foo[0]', 'val', { overwritePrimitives: false })
+// log: Setting number key (0) on object at keypath 'foo' of 'foo[0]')
 
 /* Invalid keypaths */
 get({}, 'foo.1bar')
@@ -109,11 +164,12 @@ get({}, "foo['")
 ## Documentation
 
 ### GET
-Returns value of obj at keypath
+Returns value at keypath in obj
 * @param {any} obj - context to read keypath from
 * @param {string} keypath - bracket and/or dot notation keypath string
 * @param {?object} opts - optional, defaults to { force: true }
 *   opts.force - force specifies whether non-existant keypaths should be ignored, defaults to true
+*     if false, `get` will error when reading a key on a non-existant keypath.
 * @returns {any} value at keypath
 
 ```js
@@ -128,21 +184,30 @@ const obj = {
 get(obj, "foo.bar.baz");           // returns 'val'
 get(obj, "foo['bar'].baz");        // returns 'val'
 get(obj, "['foo']['bar']['baz']"); // returns 'val'
+
+get({}, 'foo.two.three', { force: false }) // throws error
+// TypeError: Cannot read property 'three' of undefined (at keypath 'foo.two' of 'foo.two.three')
 ```
 
 ### SET
-Sets a value in obj at keypath. If force=true, set will intelligently create objects at non-existant
-keys in the keypath. If the non-existant key is a number, its value will be initialized as an array.
+Sets a value in obj at keypath. If force=true, set will create objects at non-existant keys in the
+keypath. If the non-existant key is a number, its value will be initialized as an array.
 * @param {any} obj - context to read keypath from
 * @param {string} keypath - bracket and/or dot notation keypath string to read from obj
 * @returns {any} value - value to set at keypath
-* @param {?object} opts - optional, defaults to { force: true }
-*   opts.force - force specifies whether non-existant keys in keypath should be created, defaults to true
+* @param {?object} opts - optional, defaults to { force: true, overwritePrimitives: true, warn: true }
+*   opts.force - whether non-existant keys in keypath should be created, defaults to true.
+*     if false, `set` will error when reading a key on a non-existant keypath.
+*   opts.overwritePrimitives - whether primitive keys (booleans, strings, numbers) should be overwritten.
+*     setting a key on a primitive will convert it to an object or array (if key is string or number).
+*     if false, `set` will log a warning when setting keys on primitives.
+*   opts.silent - specifies whether warning logs should be enabled, defaults to false.
 * @returns {any} value set at keypath
 
 ```js
 const set = require('keypather/set');
-const obj = {
+
+let obj = {
   foo: {
     bar: {
       baz: 'val'
@@ -152,15 +217,11 @@ const obj = {
 set(obj, "foo['bar'].baz", 'val');        // returns 'val'
 set(obj, "foo.bar.baz", 'val');           // returns 'val'
 set(obj, "['foo']['bar']['baz']", 'val'); // returns 'val'
-```
 
-Set forces creation by default:
-
-```js
-const set = require('keypather/set'); // equivalent to { force:true }
-
-set({}, "foo.bar.baz", 'val'); // returns 'val'
-// object becomes:
+/* By default, set forces creation of non-existant keys */
+obj = {}
+set(obj, "foo.bar.baz", 'val'); // returns 'val'
+// obj becomes:
 // {
 //   foo: {
 //     bar: {
@@ -169,9 +230,35 @@ set({}, "foo.bar.baz", 'val'); // returns 'val'
 //   }
 // };
 
-// Errors, force=false
+/* By default, overwrites primitives when setting a key on one */
+obj = { foo: 1 }
+set(obj, "foo.bar.baz", 'val'); // returns 'val'
+// obj becomes:
+// {
+//   foo: {
+//     bar: {
+//       baz: 'val'
+//     }
+//   }
+// };
+obj = { foo: 1 }
+set(obj, "foo[0].baz", 'val'); // returns 'val'
+// obj becomes:
+// {
+//   foo: [{
+//     baz: 'val'
+//   }]
+// };
+
+/* Errors, force=false */
 set({}, "foo.bar.baz", 'val', { force: false }); // throw's an error
-// Error: Cannot read property 'bar' of undefined (at keypath 'foo' of 'foo.bar.baz')
+// TypeError: Cannot read property 'bar' of undefined (at keypath 'foo' of 'foo.bar.baz')
+// see more errors above in the 'Errors' section
+
+/* Warnings, overwritePrimitives=false */
+set({ foo: 'str' }, 'foo.bar', 'val', { overwritePrimitives: false })
+// log: Setting key 'bar' on string 'str' at keypath 'foo' of 'foo.bar')
+// see more warnings above in the 'Errors' section
 ```
 
 ### DEL
@@ -179,11 +266,13 @@ Deletes value a keypath in obj. Similar to `delete obj.key`.
 * @param {any} obj - context to read keypath from
 * @param {string} keypath - bracket and/or dot notation keypath string to delete from obj
 * @param {?object} opts - optional, defaults to { force: true }
-*   opts.force - force specifies whether non-existant keypaths should be ignored, defaults to true
-* @returns {boolean} true for all cases except when the property is non-configurable, false in non-strict mode
+*   opts.force - whether non-existant keys in keypath should be created, defaults to true.
+*     if false, `del` will error when reading a key on a non-existant keypath.
+* @returns {boolean} true except when the property is non-configurable or in non-strict mode
 
 ```js
 const del = require('keypather/del');
+
 const obj = {
   foo: {
     bar: {
@@ -201,7 +290,111 @@ del(obj, "['foo']['bar']['baz']"); // true
 //   }
 // }
 
-// Errors, force=false
+/* Errors, force=false */
+del(obj, "one.two.three", 'val', { force: false }); // throw's an error
+// TypeError: Cannot read property 'two' of undefined (at keypath 'one' of 'one.two.three')
+// see more errors above in the 'Errors' section
+```
+
+### IMMUTABLE SET
+Sets a value in obj at keypath. If force=true, set will create objects at non-existant keys in the
+keypath. If the non-existant key is a number, its value will be initialized as an array.
+* @param {any} obj - context to read keypath from
+* @param {string} keypath - bracket and/or dot notation keypath string to read from obj
+* @returns {any} value - value to set at keypath
+* @param {?object} opts - optional, defaults to { force: true, overwritePrimitives: true, warn: true }
+*   opts.force - whether non-existant keys in keypath should be created, defaults to true.
+*     if false, `immutable-set` will error when reading a key on a non-existant keypath.
+*   opts.overwritePrimitives - whether primitive keys (booleans, strings, numbers) should be overwritten.
+*     setting a key on a primitive will convert it to an object or array (if key is string or number).
+*     if false, `immutable-set` will log a warning when setting keys on primitives.
+*   opts.silent - specifies whether warning logs should be enabled, defaults to false.
+*   opts.shallowClone - provide custom shallowClone, defaults to [shallow-clone](https://npmrepo.com/shallow-clone)
+* @returns {any} returns same obj if unmodified, otherwise modified clone of obj
+
+```js
+const set = require('keypather/immutable-set');
+
+let obj = {
+  foo: {
+    bar: {
+      baz: 'val'
+    }
+  }
+};
+let out
+out = set(obj, "foo['bar'].baz", 'val');         // returns SAME object, since the value was unchanged
+// out === obj
+out = set(obj, "foo.bar.baz", 'val2');           // returns { foo: { bar: { baz: 'val2' } } } (new object)
+// out !== obj
+out = set(obj, "['foo']['bar']['baz']", 'val3'); // returns { foo: { bar: { baz: 'val3' } } } (new object)
+// out !== obj
+
+/* By default, overwrites primitives when setting a key on one */
+obj = { foo: 1 }
+out = set(obj, "foo.bar.baz", 'val'); // returns new object
+// out !== obj
+// out is:
+// {
+//   foo: {
+//     bar: {
+//       baz: 'val'
+//     }
+//   }
+// };
+obj = { foo: 1 }
+out = set(obj, "foo[0].baz", 'val'); // returns new object
+// out !== obj
+// out is:
+// {
+//   foo: [{
+//     baz: 'val'
+//   }]
+// };
+
+/* Errors, force=false */
+obj = {}
+set(obj, "foo.bar.baz", 'val', { force: false }); // throws error
+// Error: Cannot read property 'bar' of undefined (at keypath 'foo' of 'foo.bar.baz')
+
+/* Warnings, force=false */
+obj = { foo: 'str' }
+out = set(obj, 'foo.bar', 'val', { overwritePrimitives: false })
+// out === obj, since keys cannot be set on strings or numbers
+// log: Setting key 'bar' on string 'str' at keypath 'foo' of 'foo.bar')
+```
+
+### IMMUTABLE DEL
+Deletes value a keypath in obj. Similar to `delete obj.key`.
+* @param {any} obj - context to read keypath from
+* @param {string} keypath - bracket and/or dot notation keypath string to delete from obj
+* @param {?object} opts - optional, defaults to { force: true }
+*   opts.force - whether non-existant keys in keypath should be created, defaults to true.
+*     if false, `del` will error when reading a key on a non-existant keypath.
+*   opts.shallowClone - provide custom shallowClone, defaults to [shallow-clone](https://npmrepo.com/shallow-clone)
+* @returns {any} returns same obj if unmodified, otherwise modified clone of obj
+
+```js
+const del = require('keypather/immutable-del');
+const obj = {
+  foo: {
+    bar: {
+      baz: 'val'
+    }
+  }
+};
+let out
+out = del(obj, "foo['bar'].baz");        // true
+out = del(obj, "foo.bar.baz");           // true
+out = del(obj, "['foo']['bar']['baz']"); // true
+// obj becomes:
+// {
+//   foo: {
+//     bar: {}
+//   }
+// }
+
+/* Errors, force=false */
 del(obj, "one.two.three", 'val', { force: false }); // throw's an error
 // Error: Cannot read property 'two' of undefined (at keypath 'one' of 'one.two.three')
 ```

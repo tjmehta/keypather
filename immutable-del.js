@@ -1,14 +1,14 @@
 var defaults = require('101/defaults')
 
+var defaultShallowClone = require('./lib/default-shallow-clone')
 var keypathReducer = require('./lib/keypath-reducer.js')
 var delOperation = require('./lib/operations/immutable-del.js')
-var shallowClone = require('./lib/shallow-clone')
 
 module.exports = immutableDelKeypath
 
 function immutableDelKeypath (ctx, keypath, opts) {
   opts = defaults(opts, {
-    shallowClone: shallowClone
+    shallowClone: defaultShallowClone
   })
   return keypathReducer({
     ctx: ctx,

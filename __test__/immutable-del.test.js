@@ -36,21 +36,46 @@ Object.defineProperty(hasUndeletableProp, 'qux', {
   writable: false,
   value: val
 })
+var hasUnclonableProp
+(function () {
+  hasUnclonableProp = arguments
+})(1, 2, 3)
+
+var hasToJSON = {
+  foo: 10,
+  toJSON: function () {
+    return { foo: 10, bar: 10 }
+  }
+}
+function shallowClone (obj) {
+  var out = require('shallow-clone')(obj)
+  for (var k in obj) {
+    Object.defineProperty(out, k, Object.getOwnPropertyDescriptor(obj, k))
+  }
+  return out
+}
+function shallowCloneFail (obj) {
+  return obj
+}
 
 describe('immutableDel', function () {
   describe('path exists', function () {
     describe('dot notation', function () {
       testFunction(immutableDel, [{ foo: val }, 'foo'], {})
-      testFunction(immutableDel, [{ foo: { bar: val } }, 'foo.bar'], {foo: {}})
-      testFunction(immutableDel, [{ foo: { bar: { qux: val } } }, 'foo.bar.qux'], {foo: {bar: {}}})
-      testFunction(immutableDel, [{ foo: { baz: hasUndeletableProp } }, 'foo.baz.qux'], {foo: {baz: {}}})
+      testFunction(immutableDel, [hasToJSON, 'foo'], { bar: 10 })
+      testFunction(immutableDel, [{ foo: { bar: val } }, 'foo.bar'], { foo: {} })
+      testFunction(immutableDel, [{ foo: { bar: { qux: val } } }, 'foo.bar.qux'], { foo: { bar: {} } })
+      testFunction(immutableDel, [{ foo: { baz: hasUndeletableProp } }, 'foo.baz.qux'], { foo: { baz: {} } })
+      testFunction(immutableDel, [{ foo: { baz: hasUndeletableProp } }, 'foo.baz.qux', { shallowClone: shallowClone }], { foo: { baz: hasUndeletableProp } })
+      testFunction(immutableDel, [{ foo: { baz: hasUnclonableProp } }, 'foo.baz.qux'], /Shallow clone returned original.*opts.shallow/)
+      testFunction(immutableDel, [{ foo: { baz: hasUndeletableProp } }, 'foo.baz.qux', { shallowClone: shallowCloneFail }], /Shallow clone returned original/)
     })
 
     describe('bracket notation', function () {
       describe('single quote', function () {
         testFunction(immutableDel, [{ foo: val }, "['foo']"], {})
-        testFunction(immutableDel, [{ foo: { bar: val } }, "['foo']['bar']"], {foo: {}})
-        testFunction(immutableDel, [{ foo: { bar: { qux: val } } }, "['foo']['bar']['qux']"], {foo: {bar: {}}})
+        testFunction(immutableDel, [{ foo: { bar: val } }, "['foo']['bar']"], { foo: {} })
+        testFunction(immutableDel, [{ foo: { bar: { qux: val } } }, "['foo']['bar']['qux']"], { foo: { bar: {} } })
         testFunction(immutableDel, [{ foo: { 'dot.key': { qux: val } } }, "['foo']['dot.key']['qux']"], { foo: { 'dot.key': {} } })
         testFunction(immutableDel, [{ foo: { '[bracket.key]': { qux: val } } }, "['foo']['[bracket.key]']['qux']"], { foo: { '[bracket.key]': {} } })
         testFunction(immutableDel, [{ foo: { '\'quote.key\'': { qux: val } } }, "['foo'][''quote.key'']['qux']"], { foo: { '\'quote.key\'': {} } })
