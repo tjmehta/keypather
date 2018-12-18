@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.1.0
+- feature: added immutable-set
+- feature: should immutable-del
+- patch: fix issue w/ setting number indexes
+- patch: improved error messages
+- patch: improved readme
+
 ## 3.0.0 - rewrote keypather as a string parser!
 - breaking!: dropped support for functions
 - breaking!: expand doesn't support custom delimeters larger than 1 character
@@ -36,4 +43,3 @@
 - patch: fixed bug w/ keypaths that have depth greater than three, eg. foo.bar.qux.korge
 
 ... more
-

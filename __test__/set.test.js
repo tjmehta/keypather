@@ -16,7 +16,8 @@ function testFunction (fn, args, expected, only) {
   } else {
     testFn('should ' + fn.name + '("' + args[1] + '")', function () {
       var result = fn.apply(null, args)
-      var expectedResult = args[2]
+      var opts = args[3] || {}
+      var expectedResult = opts.overwritePrimitives === false ? undefined : args[2]
       debug({
         result: result,
         expectedResult: expectedResult,
@@ -26,6 +27,7 @@ function testFunction (fn, args, expected, only) {
       expect(val).toEqual({}) // safety check, since val is static
       expect(result).toBe(expectedResult)
       expect(args[0]).toEqual(expected)
+      expect(Array.isArray(args[0])).toBe(Array.isArray(expected))
     })
   }
 }
@@ -45,6 +47,10 @@ describe('set', function () {
     describe('bracket notation', function () {
       describe('single quote', function () {
         testFunction(set, [{ foo: old }, "['foo']", val], { foo: val })
+        testFunction(set, [[], '[0]', val], [val])
+        testFunction(set, [{}, '[0]', val], { '0': val })
+        testFunction(set, [[], 'foo', val], Object.assign([], {foo: val}))
+        testFunction(set, [{}, 'foo', val], { 'foo': val })
         testFunction(set, [{ foo: { bar: old } }, "['foo']['bar']", val], { foo: { bar: val } })
         testFunction(set, [{ foo: { bar: { qux: old } } }, "['foo']['bar']['qux']", val], { foo: { bar: { qux: val } } })
         testFunction(set, [{ foo: { 'dot.key': { qux: old } } }, "['foo']['dot.key']['qux']", val], { foo: { 'dot.key': { qux: val } } })
@@ -85,11 +91,20 @@ describe('set', function () {
     })
 
     describe('overwrite', () => {
-      beforeEach(() => {
-        old = 1
-      })
+      testFunction(set, [{ foo: 1 }, 'foo.bar', val], { foo: { bar: val } })
+      testFunction(set, [{ foo: 1 }, 'foo.qux', val, {overwritePrimitives: false}], { foo: 1 })
+      testFunction(set, [{ foo: 1 }, 'foo[0]', val], { foo: [val] })
+      testFunction(set, [{ foo: 1 }, 'foo[0]', val, {overwritePrimitives: false}], { foo: 1 })
+      testFunction(set, [{ foo: 'str' }, 'foo.bar', val, {overwritePrimitives: false}], { foo: 'str' })
+    })
 
-      testFunction(set, [{ foo: old }, 'foo.bar', val], { foo: { bar: val } })
+    describe('silent', () => {
+      var opts1 = {silent: true}
+      var opts2 = {overwritePrimitives: false, silent: true}
+      testFunction(set, [{ foo: [] }, 'foo.qux', val, opts1], { foo: Object.assign([], { qux: val }) })
+      testFunction(set, [{ foo: {} }, 'foo[0]', val, opts1], { foo: {'0': val} })
+      testFunction(set, [{ foo: 1 }, 'foo.qux', val, opts2], { foo: 1 })
+      testFunction(set, [{ foo: 1 }, 'foo[0]', val, opts2], { foo: 1 })
     })
   })
 
@@ -99,6 +114,8 @@ describe('set', function () {
         testFunction(set, [{}, 'foo', val], { foo: val })
         testFunction(set, [{}, 'foo.bar', val], { foo: { bar: val } })
         testFunction(set, [{ foo: {} }, 'foo.bar.qux', val], { foo: { bar: { qux: val } } })
+        testFunction(set, [{}, 'foo[0]', val], { foo: [val] })
+        testFunction(set, [{foo: {}}, 'foo[0]', val], { foo: { '0': val } })
       })
 
       describe('bracket notation', function () {
