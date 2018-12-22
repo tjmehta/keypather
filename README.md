@@ -2,9 +2,9 @@
 
 # keypather [![Build Status](https://travis-ci.org/tjmehta/keypather.png?branch=master)](https://travis-ci.org/tjmehta/keypather) [![Coverage Status](https://coveralls.io/repos/github/tjmehta/keypather/badge.svg?branch=immutable-methods)](https://coveralls.io/github/tjmehta/keypather?branch=immutable-methods) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
 
-Get, set, or delete a deep value using a keypath string.
+Get, set, or delete a deep value using a keypath string (also supports immutable methods).
 
-A collection of keypath utilities: get, set, delete, in, has, flatten, expand, and immutable set/delete.
+A collection of keypath utilities: get, set, delete, in, has, immutable set/delete, flatten, and expand.
 
 Lightweight and parses keypaths using vanilla JS - No ```eval``` or ```new Function``` hacks!
 
