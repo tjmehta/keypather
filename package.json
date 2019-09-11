@@ -50,6 +50,6 @@
     "deep-freeze-strict": "^1.1.1",
     "fast-deep-equal": "^2.0.1",
     "jest": "^21.2.1",
-    "standard": "^12.0.1"
+    "standard": "^14.2.0"
   }
 }
