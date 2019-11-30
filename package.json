@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "deep-freeze-strict": "^1.1.1",
-    "fast-deep-equal": "^2.0.1",
+    "fast-deep-equal": "^3.0.0",
     "jest": "^21.2.1",
     "standard": "^12.0.1"
   }
