@@ -42,7 +42,7 @@
   "dependencies": {
     "101": "^1.6.2",
     "debug": "^3.1.0",
-    "escape-string-regexp": "^1.0.5",
+    "escape-string-regexp": "^4.0.0",
     "shallow-clone": "^3.0.0",
     "string-reduce": "^1.0.0"
   },
