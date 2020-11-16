@@ -50,7 +50,8 @@ module.exports.common = [
   {
     full: {
       foo: { a: 1, b: 2, c: 3 },
-      bar: [1, 2, 3]
+      bar: [1, 2, 3],
+      baz: [],
     },
     flat: {
       'foo.a': 1,
@@ -58,7 +59,8 @@ module.exports.common = [
       'foo.c': 3,
       'bar[0]': 1,
       'bar[1]': 2,
-      'bar[2]': 3
+      'bar[2]': 3,
+      'baz': []
     }
   },
 
