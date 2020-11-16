@@ -40,7 +40,9 @@ module.exports = function flatten (obj, opts) {
       : key
 
     // check if value is flattenable
-    if (Array.isArray(val) || isObject(val)) {
+    if (Array.isArray(val) && val.length === 0) {
+      flat[keypath] = val
+    } else if (Array.isArray(val) || isObject(val)) {
       // value is flattenable, continue flattenning
       flatten(val, {
         delimeter: opts.delimeter,
